@@ -1,0 +1,23 @@
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Loader from "./Loader";
+
+export default function LoadingWrapper({ children }) {
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+      router.push("/dashboard");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  if (loading) {
+    return <Loader loadingTime={2} />;
+  }
+
+  return <>{children}</>;
+}

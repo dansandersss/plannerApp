@@ -1,0 +1,17 @@
+.progressBar {
+  transition: width 1s linear;
+}
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loader-content {
+  width: 80%;
+  max-width: 1263px;
+  height: 80%;
+  max-height: 853px;
+}

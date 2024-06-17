@@ -15,17 +15,8 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-}
 
 body {
-  box-sizing: border-box;
-  /* overflow: hidden; */
-
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
