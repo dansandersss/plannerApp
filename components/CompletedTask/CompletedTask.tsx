@@ -54,7 +54,7 @@ function CompletedTask() {
             <p>
               Completed: <br />
               <span className="text-sm text-gray-600 opacity-75">
-                {timeAgo}
+                {timeAgo} ago
               </span>
             </p>
           </div>

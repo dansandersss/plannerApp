@@ -4,7 +4,7 @@ import { TailSpin } from "react-loader-spinner";
 import "./loader.css";
 import images from "@/constants/images";
 
-const Loader = ({ loadingTime }) => {
+const LoaderForPages = ({ loadingTime }) => {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     const duration = loadingTime * 1000;
@@ -20,7 +20,7 @@ const Loader = ({ loadingTime }) => {
   }, [loadingTime]);
   return (
     <>
-      <div className="loader-container bg-newBgColor-7-1 ">
+      <div className="loader-container ">
         <div
           className={`flex justify-center items-center loader-content bg-${images.firstGradient} rounded-lg shadow-md`}
         >
@@ -29,17 +29,14 @@ const Loader = ({ loadingTime }) => {
               visible={true}
               height="396"
               width="396"
-              color="#fff"
+              color="#FF6767"
               ariaLabel="tail-spin-loading"
               radius="1"
               wrapperStyle={{}}
               wrapperClass=""
             />
-            <div
-              className={`progressBar absolute bottom-[-50px] left-0 bg-white h-4 rounded-md`}
-              style={{ width: `${Math.round(progress)}%` }}
-            ></div>
-            <div className="absolute top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%] text-white text-[1.2rem] font-bold">
+
+            <div className="absolute top-[50%] left-[50%] transform translate-x-[-50%] translate-y-[-50%] text-newBgColor-7-1 text-[1.2rem] font-bold">
               {Math.round(progress)}%
             </div>
           </div>
@@ -49,4 +46,4 @@ const Loader = ({ loadingTime }) => {
   );
 };
 
-export default Loader;
+export default LoaderForPages;

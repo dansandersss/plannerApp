@@ -121,12 +121,11 @@ export async function checkAuth() {
 
 export const addTask = async (title, priority, tags, desc, users) => {
   try {
-    const createdAt = Date.now();
     await databases.createDocument(
       config.databaseId,
       config.tasksCollectionId,
       ID.unique(),
-      { title, priority, tags, desc, users, createdAt: createdAt }
+      { title, priority, tags, desc, users }
     );
   } catch (error) {
     console.log("Error", error.message);
@@ -257,16 +256,123 @@ export const getVitalTaks = async () => {
 
 export async function searchPosts(query) {
   try {
+    console.log("Querying database with:", query); // Отладка
     const posts = await databases.listDocuments(
       config.databaseId,
       config.tasksCollectionId,
       [Query.search("title", query), Query.search("desc", query)]
     );
 
-    if (!posts) throw new Error("Something went wrong");
+    console.log("Search results", posts.documents); // Отладка
+
+    if (!posts || posts.documents.length === 0) {
+      console.log("No documents found for query:", query);
+      return [];
+    }
 
     return posts.documents;
   } catch (error) {
-    throw new Error(error);
+    console.error("Error in searchPosts:", error.message);
+    throw new Error(error.message);
   }
 }
+
+export const getAllTodos = async () => {
+  try {
+    const allTodos = await databases.listDocuments(
+      config.databaseId,
+      config.todoCollectionId,
+      [Query.orderAsc("$createdAt")]
+    );
+    return allTodos.documents;
+  } catch (error) {
+    console.log("Error fetching all tasks", error.message);
+    throw error;
+  }
+};
+
+export const getAllNotes = async () => {
+  try {
+    const allTodos = await databases.listDocuments(
+      config.databaseId,
+      config.notesCollectionId,
+      [Query.orderDesc("$createdAt")]
+    );
+    return allTodos.documents;
+  } catch (error) {
+    console.log("Error fetching all todos", error.message);
+    throw error;
+  }
+};
+
+export const addTodo = async (todoData) => {
+  try {
+    const { title, tags, users } = todoData;
+    await databases.createDocument(
+      config.databaseId,
+      config.todoCollectionId,
+      ID.unique(),
+      { title, tags, users }
+    );
+  } catch (error) {
+    console.log("Error adding todo", error.message);
+    throw error;
+  }
+};
+
+export const addNote = async (noteData) => {
+  try {
+    const { title, desc, users, tags } = noteData;
+    await databases.createDocument(
+      config.databaseId,
+      config.notesCollectionId,
+      ID.unique(),
+      { title, desc, users, tags }
+    );
+  } catch (error) {
+    console.log("Error adding note", error.message);
+    throw error;
+  }
+};
+
+export const deleteTodo = async (todoId) => {
+  try {
+    await databases.deleteDocument(
+      config.databaseId,
+      config.todoCollectionId,
+      todoId
+    );
+  } catch (error) {
+    console.log("Error deleting todo", error.message);
+    throw error;
+  }
+};
+
+export const updateNoteById = async (noteId, updatedData) => {
+  try {
+    const updatedNote = await databases.updateDocument(
+      config.databaseId,
+      config.notesCollectionId,
+      noteId,
+      updatedData
+    );
+
+    return updatedNote;
+  } catch (error) {
+    console.log("Error updating task by ID", error.message);
+    throw error;
+  }
+};
+
+export const deleteNoteById = async (noteId) => {
+  try {
+    await databases.deleteDocument(
+      config.databaseId,
+      config.notesCollectionId,
+      noteId
+    );
+  } catch (error) {
+    console.log("Error deleting task by ID", error.message);
+    throw error;
+  }
+};

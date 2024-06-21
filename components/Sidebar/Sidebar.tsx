@@ -2,15 +2,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import icons from "@/constants/icons";
-import { useGlobalContext } from "@/context/GlobalProvider";
-import { links, tasks, projects } from "../../constants/linkInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
-import { usePathname } from "next/navigation";
-import Modal from "../Modal/Modal";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { usePathname, useRouter } from "next/navigation";
 import { getCurrentUser, signOut } from "@/lib/appwrite";
-import { useRouter } from "next/navigation";
+import BasicModal from "../Modal/NewModal";
+import { links } from "../../constants/linkInfo";
 
 const Sidebar = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,14 +36,14 @@ const Sidebar = () => {
     await signOut();
     setUser(null);
     setIsLoggedIn(false);
-
     router.replace("/login");
   };
+
   const avatarUrl = user?.avatar;
 
   return (
     <>
-      <section className="relative bg-[#FF6767] h-screen border-r-2 rounded-md ">
+      <section className="relative bg-[#FF6767] h-screen border-r-2 rounded-md">
         <div className="absolute left-1/2 transform -translate-x-1/2 -top-12 flex flex-col items-center justify-center">
           <div className="bg-white rounded-full border-white border-[4px]">
             <Image
@@ -80,8 +78,7 @@ const Sidebar = () => {
                       style={{ height: "20px" }}
                       icon={link.icon}
                     />
-
-                    <div className=" flex items-center justify-between w-full ">
+                    <div className="flex items-center justify-between w-full">
                       <p className="text-[18px]">{link.text}</p>
                       {link.forward === "/pageTwo" && (
                         <button
@@ -109,7 +106,7 @@ const Sidebar = () => {
           </button>
         </div>
       </section>
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} />
+      <BasicModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </>
   );
 };

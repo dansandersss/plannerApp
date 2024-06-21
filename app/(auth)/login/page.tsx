@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createUser, signIn } from "@/lib/appwrite";
 import Image from "next/image";
@@ -113,7 +113,7 @@ export default function LoginPage() {
             type="submit"
             className=" bg-newBgColor-7-1 hover:bg-newBgColor-7-2 transition ease-in-out duration-200 text-white px-4 py-2 rounded-md"
           >
-            {isRegistering ? "Зарегистрироваться" : "Войти"}
+            {isRegistering ? "Sign Up" : "Sign In"}
           </button>
           <p className="mt-4 text-black">
             {isRegistering ? (

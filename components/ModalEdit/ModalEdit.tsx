@@ -61,7 +61,7 @@ function ModalEdit({
               </button>
               <button
                 onClick={updateTask}
-                className="bg-blue-500 text-white py-2 px-4 rounded-md"
+                className=" bg-newBgColor-7-1 hover:bg-newBgColor-7-2 transition-all duration-200 ease-in-out text-white py-2 px-4 rounded-md"
               >
                 Save
               </button>

@@ -1,12 +1,17 @@
 "use client";
 import { updateTaskStatus } from "@/lib/appwrite";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 function TaskCard({ task, onUpdate }) {
   const maxLength = 100;
   const tagsLength = 2;
   const pathName = usePathname();
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/tasks/${task.$id}`);
+  };
 
   // const handleCompleteTask = async () => {
   //   try {
@@ -32,7 +37,7 @@ function TaskCard({ task, onUpdate }) {
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 cursor-pointer" onClick={handleClick}>
       {/* <div className="mb-4">
         {task.status !== "completed" && (
           <button onClick={handleCompleteTask} className=" text-black ">
@@ -78,7 +83,7 @@ function TaskCard({ task, onUpdate }) {
               </p>
             </span>
             <span className="text-sm text-gray-600">
-              Tags:
+              Tags:{" "}
               {task.tags.length > tagsLength
                 ? ` ${task.tags.slice(0, tagsLength).join(", ")}...`
                 : task.tags.join(", ")}

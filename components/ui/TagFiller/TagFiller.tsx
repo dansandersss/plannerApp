@@ -20,15 +20,20 @@ const InputWrapper = styled("div")(
   padding: 1px;
   display: flex;
   flex-wrap: wrap;
-	width: '100%'
+	width: 100%;
 
   &:hover {
-    border-color: ${theme.palette.mode === "dark" ? "#177ddc" : "#40a9ff"};
+    border-color: #FF6767;
   }
 
+	"& .MuiInputLabel-root": {
+    color: "#ccc",
+    transform: "translate(10px, 14px) scale(1)",
+  },
+
   &.focused {
-    border-color: ${theme.palette.mode === "dark" ? "#177ddc" : "#40a9ff"};
-    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+    border-color: #FF6767;
+    box-shadow: 0 0 0 2px rgba(255, 103, 103, 0.2);
   }
 
   & input {
@@ -38,15 +43,19 @@ const InputWrapper = styled("div")(
         ? "rgba(255,255,255,0.65)"
         : "rgba(0,0,0,.85)"
     };
-    height: 30px;
+    height: 50px;
     box-sizing: border-box;
-    padding: 4px 6px;
-    width: "100%";
+    padding: 4px 10px;
+    width: 100%;
     min-width: 30px;
     flex-grow: 1;
     border: 0;
     margin: 0;
     outline: 0;
+
+    &:focus {
+      color: #000;
+    }
   }
 `
 );
@@ -69,7 +78,7 @@ const StyledTag = styled("div")(
   overflow: hidden;
 
   &:focus {
-    border-color: ${theme.palette.mode === "dark" ? "#177ddc" : "#40a9ff"};
+    border-color: #FF6767;
     background-color: ${theme.palette.mode === "dark" ? "#003b57" : "#e6f7ff"};
   }
 

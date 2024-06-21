@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import TaskDetail from "../TaskDetail/TaskDetail";
 import ModalEdit from "../ModalEdit/ModalEdit";
+import LoaderForPages from "../Loader/LoaderForPages";
 
 function VitalTasks() {
   const { user } = useGlobalContext();
@@ -15,12 +16,14 @@ function VitalTasks() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState({});
   const [tags, setTags] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchTasks = async () => {
     try {
       const vitalTasks = await getVitalTaks();
       setTasks(vitalTasks);
       if (vitalTasks.length > 0) {
+        setIsLoading(false);
         setSelectedTask(vitalTasks[0]);
       }
     } catch (error) {
@@ -89,63 +92,67 @@ function VitalTasks() {
 
   return (
     <>
-      <section className="mt-16 ml-14 pb-4">
-        <h1 className="text-black text-4xl font-bold mb-4">
-          <span className=" text-newTextColor-7-1 ">{user?.username}</span>, you
-          have {tasks.length} vital tasks{" "}
-        </h1>
+      {isLoading ? (
+        <LoaderForPages loadingTime={5} />
+      ) : (
+        <section className="mt-16 ml-14 pb-4">
+          <h1 className="text-black text-4xl font-bold mb-4">
+            <span className=" text-newTextColor-7-1 ">{user?.username}</span>,
+            you have {tasks.length} vital tasks{" "}
+          </h1>
 
-        <div className="flex gap-4">
-          <div className="border w-[55%] rounded-md p-4">
-            <div>
-              {tasks.length ? (
-                tasks.map((task) => (
-                  <div>
-                    <div
-                      className="cursor-pointer"
-                      onClick={() => handleTaskClick(task.$id)}
-                    >
-                      <TaskCard
-                        onUpdate={fetchTasks}
-                        key={task.$id}
-                        task={task}
-                      />
+          <div className="flex gap-4">
+            <div className="border w-[55%] rounded-md p-4">
+              <div>
+                {tasks.length ? (
+                  tasks.map((task) => (
+                    <div>
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => handleTaskClick(task.$id)}
+                      >
+                        <TaskCard
+                          onUpdate={fetchTasks}
+                          key={task.$id}
+                          task={task}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p>No tasks available</p>
+                  ))
+                ) : (
+                  <p>No tasks available</p>
+                )}
+              </div>
+            </div>
+
+            <div className="w-[45%]">
+              {selectedTask && (
+                <TaskDetail
+                  deleteTask={() => {
+                    handleDeleteTask(selectedTask.$id);
+                    setSelectedTask(null);
+                  }}
+                  editTask={() => handleEditTask(selectedTask)}
+                  task={selectedTask}
+                />
               )}
             </div>
           </div>
 
-          <div className="w-[45%]">
-            {selectedTask && (
-              <TaskDetail
-                deleteTask={() => {
-                  handleDeleteTask(selectedTask.$id);
-                  setSelectedTask(null);
-                }}
-                editTask={() => handleEditTask(selectedTask)}
-                task={selectedTask}
-              />
-            )}
-          </div>
-        </div>
-
-        {isEditing && (
-          <ModalEdit
-            editedTitle={editedTask.title}
-            onChange={handleChange}
-            editedDesc={editedTask.desc}
-            editedPriority={editedTask.priority}
-            editedStatus={editedTask.status}
-            isEditing={setIsEditing}
-            updateTask={handleUpdateTask}
-            editedTags={selectedTask.tags}
-          />
-        )}
-      </section>
+          {isEditing && (
+            <ModalEdit
+              editedTitle={editedTask.title}
+              onChange={handleChange}
+              editedDesc={editedTask.desc}
+              editedPriority={editedTask.priority}
+              editedStatus={editedTask.status}
+              isEditing={setIsEditing}
+              updateTask={handleUpdateTask}
+              editedTags={selectedTask.tags}
+            />
+          )}
+        </section>
+      )}
     </>
   );
 }

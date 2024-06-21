@@ -10,10 +10,13 @@ import TaskStatus from "../TaskStatus/TaskStatus";
 import CompletedTask from "../CompletedTask/CompletedTask";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
+import Loader from "../Loader/Loader";
+import LoaderForPages from "../Loader/LoaderForPages";
 
 function Dashboard() {
   const { user } = useGlobalContext();
   const [tasks, setTasks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const taskRefs = useRef([]);
 
@@ -21,6 +24,9 @@ function Dashboard() {
     try {
       const latestTasks = await getLatestTasks();
       setTasks(latestTasks);
+      if (latestTasks !== "") {
+        setIsLoading(false);
+      }
     } catch (error) {
       console.log("Error fetching tasks", error.message);
     }
@@ -92,85 +98,91 @@ function Dashboard() {
 
   return (
     <>
-      <section className="mt-16 ml-14 pb-4">
-        <h1 className="text-black text-4xl font-bold mb-4">
-          Welcome back,{" "}
-          <span className=" text-newTextColor-7-1 ">{user?.username}</span>
-        </h1>
+      {isLoading ? (
+        <LoaderForPages loadingTime={5} />
+      ) : (
+        <section className="mt-16 ml-14 pb-4">
+          <h1 className="text-black text-4xl font-bold mb-4">
+            Welcome back,{" "}
+            <span className=" text-newTextColor-7-1 ">{user?.username}</span>
+          </h1>
 
-        <div className="flex flex-row gap-4 border rounded-sm p-5">
-          <div className="border rounded-md p-4 shadow-md">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex gap-2 items-center">
-                <FontAwesomeIcon className="opacity-50" icon={icons.clock} />
-                <h2 className=" text-newTextColor-7-1 ">Latest Added Tasks</h2>
+          <div className="flex flex-row gap-4 border rounded-sm p-5">
+            <div className="border rounded-md p-4 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex gap-2 items-center">
+                  <FontAwesomeIcon className="opacity-50" icon={icons.clock} />
+                  <h2 className=" text-newTextColor-7-1 ">
+                    Latest Added Tasks
+                  </h2>
+                </div>
+
+                <div className="flex gap-2 items-center">
+                  <FontAwesomeIcon
+                    className="text-newTextColor-7-1"
+                    icon={faPlus}
+                  />
+                  <p>Add task</p>
+                </div>
               </div>
 
-              <div className="flex gap-2 items-center">
-                <FontAwesomeIcon
-                  className="text-newTextColor-7-1"
-                  icon={faPlus}
-                />
-                <p>Add task</p>
-              </div>
-            </div>
-
-            <div>
-              {tasks.length ? (
-                tasks.map((task, index) => (
-                  <div key={task.$id}>
-                    <p className="mb-4">
-                      Created on: {formatCreatedAt(task.$createdAt)}
-                    </p>
-                    <div
-                      ref={(el) => (taskRefs.current[index] = el)}
-                      className="cursor-pointer relative"
-                      onClick={() => handleOpenTaskPage(task.$id)}
-                    >
-                      <TaskCard
-                        onUpdate={fetchTasks}
-                        key={task.$id}
-                        task={task}
-                      />
+              <div>
+                {tasks.length ? (
+                  tasks.map((task, index) => (
+                    <div key={task.$id}>
+                      <p className="mb-4">
+                        Created on: {formatCreatedAt(task.$createdAt)}
+                      </p>
+                      <div
+                        ref={(el) => (taskRefs.current[index] = el)}
+                        className="cursor-pointer relative"
+                        onClick={() => handleOpenTaskPage(task.$id)}
+                      >
+                        <TaskCard
+                          onUpdate={fetchTasks}
+                          key={task.$id}
+                          task={task}
+                        />
+                      </div>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p>No tasks available</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-col justify-between gap-5">
-            <div className="p-4 pb-5 border rounded-md shadow-md">
-              <div className="flex gap-2 items-center">
-                <FontAwesomeIcon
-                  className="opacity-50"
-                  icon={icons.completed}
-                />
-                <h2 className=" text-newTextColor-7-1 ">Task Status</h2>
+                  ))
+                ) : (
+                  <p>No tasks available</p>
+                )}
               </div>
-              <TaskStatus />
             </div>
 
-            <div>
-              <div className="rounded-md border p-4 shadow-md">
-                <div className="flex gap-2 items-center mb-4">
+            <div className="flex flex-col justify-between gap-5">
+              <div className="p-4 pb-5 border rounded-md shadow-md">
+                <div className="flex gap-2 items-center">
                   <FontAwesomeIcon
                     className="opacity-50"
                     icon={icons.completed}
                   />
-                  <h2 className=" text-newTextColor-7-1 ">
-                    Recently completed task
-                  </h2>
+                  <h2 className=" text-newTextColor-7-1 ">Task Status</h2>
                 </div>
+                <TaskStatus />
+              </div>
 
-                <CompletedTask />
+              <div>
+                <div className="rounded-md border p-4 shadow-md">
+                  <div className="flex gap-2 items-center mb-4">
+                    <FontAwesomeIcon
+                      className="opacity-50"
+                      icon={icons.completed}
+                    />
+                    <h2 className=" text-newTextColor-7-1 ">
+                      Recently completed task
+                    </h2>
+                  </div>
+
+                  <CompletedTask />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   );
 }

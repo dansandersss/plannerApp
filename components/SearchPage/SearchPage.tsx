@@ -1,21 +1,21 @@
 "use client";
 
 import { searchPosts } from "@/lib/appwrite";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 function SearchPage() {
   const [searchResults, setSearchResults] = useState([]);
   const router = useRouter();
-  const { q } = router.query;
+  const { query } = useParams();
 
   useEffect(() => {
     const fetchSearchResults = async () => {
       try {
-        if (q) {
-          const posts = await searchPosts(q);
+        if (query) {
+          const posts = await searchPosts(query);
           setSearchResults(posts);
         }
       } catch (error) {
@@ -24,7 +24,9 @@ function SearchPage() {
     };
 
     fetchSearchResults();
-  }, [q]);
+  }, [query]);
+
+  console.log(query);
 
   return (
     <>
@@ -33,13 +35,7 @@ function SearchPage() {
 
         <div className="flex flex-col gap-4">
           {searchResults.length > 0 ? (
-            searchResults.map((task) => (
-              <TaskCard
-                key={task.$id}
-                task={task}
-                // Здесь можно передать любые другие props, которые нужны для TaskCard
-              />
-            ))
+            searchResults.map((task) => <TaskCard key={task.$id} task={task} />)
           ) : (
             <p>No results found</p>
           )}

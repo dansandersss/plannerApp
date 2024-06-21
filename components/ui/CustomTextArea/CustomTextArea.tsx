@@ -13,14 +13,17 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 
 const CustomTextarea = styled(TextareaAutosize)(({ theme }) => ({
   width: "60%",
-  minHeight: "100px", // Выбираем желаемую высоту textarea
-  padding: "10px 14px", // Подбираем нужные отступы внутри textarea
-  resize: "none", // Разрешаем вертикальное изменение размера
-  border: `1px solid ${theme.palette.divider}`, // Устанавливаем границу
-  borderRadius: theme.shape.borderRadius, // Устанавливаем радиус скругления
+  minHeight: "100px",
+  padding: "10px 10px",
+  resize: "none",
+  border: `1px solid ${theme.palette.divider}`,
+  borderRadius: theme.shape.borderRadius,
   "&:focus": {
-    outline: "none", // Убираем контур при фокусе
-    borderColor: theme.palette.primary.main, // Устанавливаем цвет рамки при фокусе
+    outline: "none",
+    borderColor: "#FF6767",
+  },
+  "&:hover": {
+    borderColor: "#FF6767",
   },
 }));
 
