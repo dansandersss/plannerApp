@@ -1,10 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import { useRouter } from "next/navigation";
 import "./Search.module.css";
 import { styled } from "@mui/system";
+import { useSidebar } from "@/components/Sidebar/SidebarContext";
 
 const CustomTextField = styled(TextField)`
   & .MuiOutlinedInput-root {
@@ -30,6 +31,26 @@ const CustomTextField = styled(TextField)`
 function Search() {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const { isSidebarOpen } = useSidebar();
+  const [windowWidth, setWindowWidth] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Initialize windowWidth
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const textFieldStyle = {
+    width:
+      isSidebarOpen && windowWidth >= 1024
+        ? "200px"
+        : isSidebarOpen
+        ? "125px"
+        : "200px",
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -48,6 +69,7 @@ function Search() {
     <Box
       component="form"
       sx={{
+        width: { xs: "90%", md: "50%", lg: "10%", xl: "100%" },
         "& > :not(style)": { m: 1, width: "25ch" },
       }}
       noValidate
@@ -55,7 +77,7 @@ function Search() {
       onSubmit={handleSearch}
     >
       <CustomTextField
-        style={{ width: 500 }}
+        style={textFieldStyle}
         id="outlined-basic"
         label="Search your task here..."
         variant="outlined"

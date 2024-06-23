@@ -6,6 +6,7 @@ import TaskCard from "../TaskCard/TaskCard";
 import TaskDetail from "../TaskDetail/TaskDetail";
 import ModalEdit from "../ModalEdit/ModalEdit";
 import LoaderForPages from "../Loader/LoaderForPages";
+import { useSidebar } from "../Sidebar/SidebarContext";
 
 function VitalTasks() {
   const { user } = useGlobalContext();
@@ -17,6 +18,7 @@ function VitalTasks() {
   const [editedTask, setEditedTask] = useState({});
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isSidebarOpen } = useSidebar();
 
   const fetchTasks = async () => {
     try {
@@ -95,7 +97,13 @@ function VitalTasks() {
       {isLoading ? (
         <LoaderForPages loadingTime={5} />
       ) : (
-        <section className="mt-16 ml-14 pb-4">
+        <section
+          className={`mt-4 lg:mt-16 transition-all ease-in-out duration-200 lg:translate-x-0 ml-14 pb-4 ${
+            isSidebarOpen
+              ? "translate-x-8 md:translate-x-4"
+              : "-translate-x-16 md:-translate-x-24"
+          }`}
+        >
           <h1 className="text-black text-4xl font-bold mb-4">
             <span className=" text-newTextColor-7-1 ">{user?.username}</span>,
             you have {tasks.length} vital tasks{" "}
@@ -115,6 +123,7 @@ function VitalTasks() {
                           onUpdate={fetchTasks}
                           key={task.$id}
                           task={task}
+                          disableClick={true}
                         />
                       </div>
                     </div>

@@ -6,6 +6,7 @@ import TaskCard from "../TaskCard/TaskCard";
 import TaskDetail from "../TaskDetail/TaskDetail";
 import ModalEdit from "../ModalEdit/ModalEdit";
 import LoaderForPages from "../Loader/LoaderForPages";
+import { useSidebar } from "../Sidebar/SidebarContext";
 
 function MyTasks() {
   const { user } = useGlobalContext();
@@ -17,14 +18,18 @@ function MyTasks() {
   const [editedTask, setEditedTask] = useState({});
   const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { isSidebarOpen } = useSidebar();
 
   const fetchTasks = async () => {
     try {
       const allTasks = await getAllTasks();
-      setTasks(allTasks);
-      if (allTasks.length > 0) {
+      const filteredTasks = allTasks.filter(
+        (task) => task.status !== "completed"
+      ); // Фильтруем задачи со статусом "completed"
+      setTasks(filteredTasks);
+      if (filteredTasks.length > 0) {
         setIsLoading(false);
-        setSelectedTask(allTasks[0]);
+        setSelectedTask(filteredTasks[0]);
       }
     } catch (error) {
       console.log("Error fetching tasks:", error.message);
@@ -43,6 +48,7 @@ function MyTasks() {
     } catch (error) {
       console.error("Error deleting task:", error.message);
     }
+    fetchTasks();
   };
 
   const handleEditTask = (task) => {
@@ -95,7 +101,13 @@ function MyTasks() {
       {isLoading ? (
         <LoaderForPages loadingTime={5} />
       ) : (
-        <section className="mt-16 ml-14 pb-4">
+        <section
+          className={`mt-4 lg:mt-16 transition-all ease-in-out duration-200 lg:translate-x-0 ml-14 pb-4 ${
+            isSidebarOpen
+              ? "translate-x-8 md:translate-x-4"
+              : "-translate-x-16 md:-translate-x-24"
+          }`}
+        >
           <h1 className="text-black text-4xl font-bold mb-4">
             <span className=" text-newTextColor-7-1 ">{user?.username}</span>,
             you have {tasks.length} tasks{" "}
@@ -115,6 +127,7 @@ function MyTasks() {
                           onUpdate={fetchTasks}
                           key={task.$id}
                           task={task}
+                          disableClick={true}
                         />
                       </div>
                     </div>

@@ -17,6 +17,8 @@ import React, { useEffect, useState } from "react";
 import TodoNotesModal from "../Modal/TodoNotesModal";
 import useDateForTodoNotes from "@/hooks/useDateForTodoNotes";
 import ModalEditForNotes from "../ModalEdit/ModalEditForNotes";
+import LoaderForPages from "../Loader/LoaderForPages";
+import { useSidebar } from "../Sidebar/SidebarContext";
 
 function Notes() {
   const [notes, setNotes] = useState([]);
@@ -30,6 +32,7 @@ function Notes() {
   const [editModal, setEditModal] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
+  const { isSidebarOpen } = useSidebar();
 
   const fetchAllNotes = async () => {
     try {
@@ -53,6 +56,8 @@ function Notes() {
     } catch (error) {
       console.log(error.message);
     }
+
+    fetchAllNotes();
   };
 
   const handleOpenModal = () => {
@@ -82,6 +87,7 @@ function Notes() {
     try {
       await deleteNoteById(noteId);
       setIsDeleted(true);
+      setMenuOpen(false);
       fetchAllNotes();
     } catch (error) {
       console.error("Error deleting task:", error.message);
@@ -124,107 +130,117 @@ function Notes() {
 
   return (
     <>
-      <section className="h-[50%] px-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-black relative text-2xl font-bold  ">
-            <span className="mr-2">
-              <FontAwesomeIcon
-                className="text-newTextColor-7-1"
-                icon={icons.notesIcon}
-              />
-            </span>
-            No<span className="text-newTextColor-7-1">tes</span>
-          </h1>
-          <div
-            className="bg-newBgColor-7-1 px-2 py-1 rounded-md cursor-pointer text-newTextColor-7-2 hover:bg-newBgColor-7-2 hover:text-newBgColor-7-1 transition-all ease-in-out duration-200"
-            onClick={handleOpenModal}
-          >
-            <FontAwesomeIcon className="" icon={faPlus} />
+      {isLoading ? (
+        <LoaderForPages loadingTime={5} />
+      ) : (
+        <section
+          className={`h-[50%] px-4 transition-all ease-in-out duration-200 lg:translate-x-0 ${
+            isSidebarOpen
+              ? "translate-x-20 sm:translate-x-24 md:translate-x-28"
+              : "translate-x-8 sm:-translate-x-0 md:-translate-x-2"
+          }`}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-black relative text-2xl font-bold  ">
+              <span className="mr-2">
+                <FontAwesomeIcon
+                  className="text-newTextColor-7-1"
+                  icon={icons.notesIcon}
+                />
+              </span>
+              No<span className="text-newTextColor-7-1">tes</span>
+            </h1>
+            <div
+              className="bg-newBgColor-7-1 px-2 py-1 rounded-md cursor-pointer text-newTextColor-7-2 hover:bg-newBgColor-7-2 hover:text-newBgColor-7-1 transition-all ease-in-out duration-200"
+              onClick={handleOpenModal}
+            >
+              <FontAwesomeIcon className="" icon={faPlus} />
+            </div>
           </div>
-        </div>
 
-        <div className="overflow-y-auto max-h-[250px]">
-          {notes.length ? (
-            notes.map((note, index) => (
-              <div
-                key={note.$id}
-                className="mb-4 border p-4 rounded-md bg-slate-100 shadow-md"
-              >
-                <div className="flex flex-col gap-4">
-                  <div
-                    className="flex items-center justify-between"
-                    onClick={handleOutsideClick}
-                  >
-                    <div className="flex items-center gap-2">
-                      <FontAwesomeIcon icon={faClipboard} />
-                      <p>{formatCreatedAt(note.$createdAt)}</p>
-                    </div>
-                    <div onClick={handleMenuClick} className="relative">
-                      <FontAwesomeIcon
-                        className="cursor-pointer"
-                        icon={faEllipsis}
-                        onClick={() => handleOpenMenu(index)}
-                      />
+          <div className="overflow-y-auto max-h-[250px]">
+            {notes.length ? (
+              notes.map((note, index) => (
+                <div
+                  key={note.$id}
+                  className="mb-4 border p-4 rounded-md bg-slate-100 shadow-md"
+                >
+                  <div className="flex flex-col gap-4">
+                    <div
+                      className="flex items-center justify-between"
+                      onClick={handleOutsideClick}
+                    >
+                      <div className="flex items-center gap-2">
+                        <FontAwesomeIcon icon={faClipboard} />
+                        <p>{formatCreatedAt(note.$createdAt)}</p>
+                      </div>
+                      <div onClick={handleMenuClick} className="relative">
+                        <FontAwesomeIcon
+                          className="cursor-pointer"
+                          icon={faEllipsis}
+                          onClick={() => handleOpenMenu(index)}
+                        />
 
-                      {menuOpen && selectedIndex === index && (
-                        <div
-                          className="absolute right-1 mt-2 w-48 bg-white shadow-lg rounded-md z-10"
-                          onClick={handleMenuClick}
-                        >
-                          <button
-                            onClick={() => handleEditNote(note)} // Исправлено на использование замыкания
-                            className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left border-b-2"
+                        {menuOpen && selectedIndex === index && (
+                          <div
+                            className="absolute right-1 mt-2 w-48 bg-white shadow-lg rounded-md z-10"
+                            onClick={handleMenuClick}
                           >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(note.$id)} // Исправлено на использование замыкания
-                            className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
+                            <button
+                              onClick={() => handleEditNote(note)} // Исправлено на использование замыкания
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left border-b-2"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(note.$id)} // Исправлено на использование замыкания
+                              className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
+
+                    <h2 className="font-bold text-lg">{note.title}</h2>
+                    <p className="opacity-80 text-md">{note.desc}</p>
+                    <p className="text-newTextColor-7-1">
+                      {note.tags.join(", ")}
+                    </p>
                   </div>
-
-                  <h2 className="font-bold text-lg">{note.title}</h2>
-                  <p className="opacity-80 text-md">{note.desc}</p>
-                  <p className="text-newTextColor-7-1">
-                    {note.tags.join(", ")}
-                  </p>
                 </div>
-              </div>
-            ))
-          ) : (
-            <p>No notes available</p>
+              ))
+            ) : (
+              <p>No notes available</p>
+            )}
+          </div>
+
+          {editedNote && (
+            <ModalEditForNotes
+              editedTitle={editedNote.title}
+              editedDesc={editedNote.desc}
+              onChange={(e) => {
+                const { name, value } = e.target;
+                setEditedNote((prevNote) => ({
+                  ...prevNote,
+                  [name]: value,
+                }));
+              }}
+              closeEdit={handleCloseEditModal}
+              updateNote={handleUpdateNote}
+            />
           )}
-        </div>
 
-        {editedNote && (
-          <ModalEditForNotes
-            editedTitle={editedNote.title}
-            editedDesc={editedNote.desc}
-            onChange={(e) => {
-              const { name, value } = e.target;
-              setEditedNote((prevNote) => ({
-                ...prevNote,
-                [name]: value,
-              }));
-            }}
-            closeEdit={handleCloseEditModal}
-            updateNote={handleUpdateNote}
+          <TodoNotesModal
+            isOpen={isModalOpen}
+            onClose={handleCloseModal}
+            text={"note"}
+            submit={onSubmit}
+            desc={descExists}
           />
-        )}
-
-        <TodoNotesModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          text={"note"}
-          submit={onSubmit}
-          desc={descExists}
-        />
-      </section>
+        </section>
+      )}
     </>
   );
 }

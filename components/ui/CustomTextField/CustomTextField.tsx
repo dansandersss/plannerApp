@@ -21,7 +21,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   },
   "& .MuiInputLabel-root": {
     color: "#ccc",
-    transform: "translate(10px, 14px) scale(1)",
+    transform: "translate(10px, 7px) scale(1)",
   },
   "& .MuiInputLabel-root.Mui-focused": {
     color: "#FF6767",
@@ -30,7 +30,7 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     transform: "translate(14px, -3px) scale(0.75)",
   },
   "& .MuiInputLabel-root.Mui-focused": {
-    transform: "translate(14px, -3px) scale(0.75)",
+    transform: "translate(14px, -10px) scale(0.75)",
     color: "#FF6767",
   },
   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {

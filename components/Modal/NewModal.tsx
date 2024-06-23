@@ -3,7 +3,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { addTask } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MyCustomTextField from "../ui/CustomTextField/CustomTextField";
 import TagFiller from "../ui/TagFiller/TagFiller";
 import MyTextArea from "../ui/CustomTextArea/CustomTextArea";

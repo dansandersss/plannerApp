@@ -1,18 +1,54 @@
-import React from "react";
-import Image from "next/image";
-import icons from "@/constants/icons";
+"use client";
+import React, { useEffect, useState } from "react";
 import Search from "../ui/SearchInput/Search";
 
 function Navbar() {
+  const [currentDateTime, setCurrentDateTime] = useState("");
+
+  useEffect(() => {
+    const getCurrentDateTime = () => {
+      const now = new Date();
+
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+
+      const month = monthNames[now.getMonth()];
+      const day = now.getDate();
+      const year = now.getFullYear();
+
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const seconds = now.getSeconds().toString().padStart(2, "0");
+
+      return `${month} ${day}, ${year} ${hours}:${minutes}:${seconds}`;
+    };
+
+    const updateDateTime = () => {
+      setCurrentDateTime(getCurrentDateTime());
+    };
+
+    updateDateTime();
+
+    const interval = setInterval(updateDateTime, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
   return (
     <>
-      <section className="flex justify-between w-full items-center text-black px-[72px]">
+      <section className="hidden lg:flex justify-between w-full items-center text-black px-[72px]">
         <div className="flex items-center gap-3">
-          {/* <Image
-            className="w-[38px] h-[38px] hover:scale-150 transition-all ease-in-out duration-200 cursor-pointer pl-[72x] hover:rotate-12 rotate-0 hover:mr-2"
-            src={icons.logo}
-            alt="logo"
-          /> */}
           <div className="cursor-pointer hover:scale-125 transition-all duration-200 ease-in-out">
             <h1 className="text-[35px] font-bold flex flex-row gap-0 hover:gap-2 transition-all duration-200 ease-in-out">
               Task<span className=" text-newTextColor-7-1">Flow</span>
@@ -25,7 +61,7 @@ function Navbar() {
         </div>
 
         <div>
-          <p>Date will go here</p>
+          <p>{currentDateTime}</p>
         </div>
       </section>
     </>

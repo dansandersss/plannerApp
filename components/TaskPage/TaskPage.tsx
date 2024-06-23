@@ -6,6 +6,7 @@ import { deleteTaskById, getTaskById, updateTaskById } from "@/lib/appwrite";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import icons from "@/constants/icons";
 import ModalEdit from "../ModalEdit/ModalEdit";
+import { useSidebar } from "../Sidebar/SidebarContext";
 
 const TaskPage = () => {
   const { taskId } = useParams();
@@ -15,6 +16,7 @@ const TaskPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState({});
   const router = useRouter();
+  const { isSidebarOpen } = useSidebar();
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -106,7 +108,13 @@ const TaskPage = () => {
 
   return (
     <>
-      <section className="mt-[70px] ml-14">
+      <section
+        className={`mt-4 transition-all duration-200 ease-in-out md:mt-[70px] ml-0 md:ml-14 ${
+          isSidebarOpen
+            ? "translate-x-24 md:translate-x-0"
+            : "-translate-x-4 md:-translate-x-4"
+        }`}
+      >
         <div className="border p-4 rounded-md">
           <div className="flex items-center justify-between">
             <div>

@@ -3,14 +3,16 @@ import { updateTaskStatus } from "@/lib/appwrite";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
-function TaskCard({ task, onUpdate }) {
+function TaskCard({ task, onUpdate, disableClick }) {
   const maxLength = 100;
   const tagsLength = 2;
   const pathName = usePathname();
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/tasks/${task.$id}`);
+    if (!disableClick) {
+      router.push(`/tasks/${task.$id}`);
+    }
   };
 
   // const handleCompleteTask = async () => {
@@ -58,8 +60,8 @@ function TaskCard({ task, onUpdate }) {
         ></div>
 
         <div className="ml-4">
-          <h3 className="text-lg font-bold">{task.title}</h3>
-          <p>
+          <h3 className="text-lg  font-bold">{task.title}</h3>
+          <p className="text-sm sm:text-lg">
             {task.desc.length > maxLength
               ? `${task.desc.substring(0, maxLength)}...`
               : task.desc}

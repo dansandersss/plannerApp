@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import Loader from "../Loader/Loader";
 import LoaderForPages from "../Loader/LoaderForPages";
+import { useSidebar } from "../Sidebar/SidebarContext";
 
 function Dashboard() {
   const { user } = useGlobalContext();
@@ -19,6 +20,7 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const taskRefs = useRef([]);
+  const { isSidebarOpen } = useSidebar();
 
   const fetchTasks = async () => {
     try {
@@ -101,18 +103,24 @@ function Dashboard() {
       {isLoading ? (
         <LoaderForPages loadingTime={5} />
       ) : (
-        <section className="mt-16 ml-14 pb-4">
+        <section
+          className={`mt-4 lg:mt-16 transition-all ease-in-out duration-200 lg:translate-x-0 ml-14 pb-4 ${
+            isSidebarOpen
+              ? "sm:translate-x-4 md:translate-x-4"
+              : " translate-x-5 sm:translate-x-4 md:translate-x-4"
+          }`}
+        >
           <h1 className="text-black text-4xl font-bold mb-4">
             Welcome back,{" "}
             <span className=" text-newTextColor-7-1 ">{user?.username}</span>
           </h1>
 
-          <div className="flex flex-row gap-4 border rounded-sm p-5">
+          <div className="flex flex-col md:flex-row gap-4 border rounded-sm p-5">
             <div className="border rounded-md p-4 shadow-md">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4">
                 <div className="flex gap-2 items-center">
                   <FontAwesomeIcon className="opacity-50" icon={icons.clock} />
-                  <h2 className=" text-newTextColor-7-1 ">
+                  <h2 className=" text-sm sm:text-lg text-newTextColor-7-1 ">
                     Latest Added Tasks
                   </h2>
                 </div>
@@ -122,7 +130,7 @@ function Dashboard() {
                     className="text-newTextColor-7-1"
                     icon={faPlus}
                   />
-                  <p>Add task</p>
+                  <p className="text-sm sm:text-lg">Add task</p>
                 </div>
               </div>
 
@@ -130,7 +138,7 @@ function Dashboard() {
                 {tasks.length ? (
                   tasks.map((task, index) => (
                     <div key={task.$id}>
-                      <p className="mb-4">
+                      <p className="mb-4 text-sm sm:text-lg">
                         Created on: {formatCreatedAt(task.$createdAt)}
                       </p>
                       <div
@@ -152,7 +160,7 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="flex flex-col justify-between gap-5">
+            <div className="flex flex-col lg:justify-between gap-5">
               <div className="p-4 pb-5 border rounded-md shadow-md">
                 <div className="flex gap-2 items-center">
                   <FontAwesomeIcon

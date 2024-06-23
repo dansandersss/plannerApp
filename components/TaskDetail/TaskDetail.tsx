@@ -29,7 +29,7 @@ function TaskDetail({ task, deleteTask, editTask }) {
       <section className="border p-4 rounded-md">
         <div className="mb-4">
           <div>
-            <h1 className="text-black text-4xl font-bold mb-4">
+            <h1 className="text-black text-3xl md:text-4xl font-bold mb-4">
               {currentTask.title}
             </h1>
           </div>

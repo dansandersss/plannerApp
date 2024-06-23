@@ -95,7 +95,7 @@ function TaskStatus() {
 
   return (
     <div className="flex items-center justify-around">
-      <div className="text-center flex flex-row items-center">
+      <div className="text-center flex flex-col gap-4 sm:gap-0 sm:flex-row items-center">
         <div style={chartStyle} className="relative">
           <Doughnut data={completedData} options={options} />
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-xl text-priorityColor-low">

@@ -27,9 +27,6 @@ const useDateForTodoNotes = () => {
 
     const formattedDate = `${month} ${day}, ${year}`;
 
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-
     return `${formattedDate}`;
   }, []);
 

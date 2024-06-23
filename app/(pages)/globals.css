@@ -26,6 +26,16 @@ body {
     rgb(var(--background-start-rgb));
 }
 
+.main {
+  height: calc(100vh - 72px);
+}
+
+@media (max-width: 1024px) {
+  .main {
+    height: 100vh;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
