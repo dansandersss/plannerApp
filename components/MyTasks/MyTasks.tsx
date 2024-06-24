@@ -1,22 +1,35 @@
 "use client";
+import React, { useEffect, useState, ChangeEvent } from "react";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { deleteTaskById, getAllTasks, updateTaskById } from "@/lib/appwrite";
-import React, { useEffect, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import TaskDetail from "../TaskDetail/TaskDetail";
 import ModalEdit from "../ModalEdit/ModalEdit";
 import LoaderForPages from "../Loader/LoaderForPages";
 import { useSidebar } from "../Sidebar/SidebarContext";
 
+interface Task {
+  $id: string;
+  title: string;
+  desc: string;
+  priority: string;
+  status: string;
+  tags: string[];
+  [key: string]: any;
+}
+
+interface User {
+  username: string;
+}
+
 function MyTasks() {
-  const { user } = useGlobalContext();
-  const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
+  const { user } = useGlobalContext<{ user: User }>();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTask, setEditedTask] = useState({});
-  const [tags, setTags] = useState([]);
+  const [editedTask, setEditedTask] = useState<Partial<Task>>({});
   const [isLoading, setIsLoading] = useState(true);
   const { isSidebarOpen } = useSidebar();
 
@@ -24,14 +37,14 @@ function MyTasks() {
     try {
       const allTasks = await getAllTasks();
       const filteredTasks = allTasks.filter(
-        (task) => task.status !== "completed"
-      ); // Фильтруем задачи со статусом "completed"
+        (task: Task) => task.status !== "completed"
+      );
       setTasks(filteredTasks);
       if (filteredTasks.length > 0) {
         setIsLoading(false);
         setSelectedTask(filteredTasks[0]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error fetching tasks:", error.message);
     }
   };
@@ -40,18 +53,18 @@ function MyTasks() {
     fetchTasks();
   }, []);
 
-  const handleDeleteTask = async (taskId) => {
+  const handleDeleteTask = async (taskId: string) => {
     try {
       await deleteTaskById(taskId);
       setIsDeleted(true);
       fetchTasks();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting task:", error.message);
     }
     fetchTasks();
   };
 
-  const handleEditTask = (task) => {
+  const handleEditTask = (task: Task) => {
     setEditedTask({
       title: task.title,
       desc: task.desc,
@@ -61,12 +74,16 @@ function MyTasks() {
     setIsEditing(true);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setEditedTask((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUpdateTask = async () => {
+    if (!selectedTask) return;
+
     const updatedData = {
       title: editedTask.title,
       desc: editedTask.desc,
@@ -75,7 +92,7 @@ function MyTasks() {
     };
 
     try {
-      const updatedTask = await updateTaskById(selectedTask.$id, updatedData); // Используем $id выбранной задачи для обновления
+      const updatedTask = await updateTaskById(selectedTask.$id, updatedData);
       const updatedTasks = tasks.map((task) =>
         task.$id === selectedTask.$id ? updatedTask : task
       );
@@ -86,14 +103,14 @@ function MyTasks() {
       setTimeout(() => {
         setIsEdited(false);
       }, 5000);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating task:", error.message);
     }
   };
 
-  const handleTaskClick = (taskId) => {
+  const handleTaskClick = (taskId: string) => {
     const selected = tasks.find((task) => task.$id === taskId);
-    setSelectedTask(selected);
+    setSelectedTask(selected || null);
   };
 
   return (
@@ -104,8 +121,8 @@ function MyTasks() {
         <section
           className={`mt-4 lg:mt-16 transition-all ease-in-out duration-200 lg:translate-x-0 ml-14 pb-4 ${
             isSidebarOpen
-              ? "translate-x-8 md:translate-x-4"
-              : "-translate-x-16 md:-translate-x-24"
+              ? "translate-x-16 sm:translate-x-6 md:translate-x-6"
+              : "translate-x-8 sm:translate-x-4 md:translate-x-4"
           }`}
         >
           <h1 className="text-black text-4xl font-bold mb-4">
@@ -113,12 +130,12 @@ function MyTasks() {
             you have {tasks.length} tasks{" "}
           </h1>
 
-          <div className="flex gap-4">
-            <div className="border w-[55%] rounded-md p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="border w-[80%] sm:w-[55%] rounded-md p-4">
               <div>
                 {tasks.length ? (
                   tasks.map((task) => (
-                    <div>
+                    <div key={task.$id}>
                       <div
                         className="cursor-pointer"
                         onClick={() => handleTaskClick(task.$id)}
@@ -138,7 +155,7 @@ function MyTasks() {
               </div>
             </div>
 
-            <div className="w-[45%]">
+            <div className="w-[80%] sm:w-[45%]">
               {selectedTask && (
                 <TaskDetail
                   deleteTask={() => {
@@ -151,20 +168,19 @@ function MyTasks() {
               )}
             </div>
           </div>
-
-          {isEditing && (
-            <ModalEdit
-              editedTitle={editedTask.title}
-              onChange={handleChange}
-              editedDesc={editedTask.desc}
-              editedPriority={editedTask.priority}
-              editedStatus={editedTask.status}
-              isEditing={setIsEditing}
-              updateTask={handleUpdateTask}
-              editedTags={selectedTask.tags}
-            />
-          )}
         </section>
+      )}
+      {isEditing && (
+        <ModalEdit
+          editedTitle={editedTask.title || ""}
+          onChange={handleChange}
+          editedDesc={editedTask.desc || ""}
+          editedPriority={editedTask.priority || ""}
+          editedStatus={editedTask.status || ""}
+          isEditing={setIsEditing}
+          updateTask={handleUpdateTask}
+          editedTags={selectedTask?.tags || []}
+        />
       )}
     </>
   );

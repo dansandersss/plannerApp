@@ -3,33 +3,47 @@ import icons from "@/constants/icons";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, MutableRefObject } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import { getLatestTasks } from "@/lib/appwrite";
 import TaskStatus from "../TaskStatus/TaskStatus";
 import CompletedTask from "../CompletedTask/CompletedTask";
 import { useRouter } from "next/navigation";
 import gsap from "gsap";
-import Loader from "../Loader/Loader";
 import LoaderForPages from "../Loader/LoaderForPages";
 import { useSidebar } from "../Sidebar/SidebarContext";
+import useFormatDate from "@/hooks/useFormatDate";
+
+interface Task {
+  $id: string;
+  $createdAt: string;
+  $updatedAt: string;
+  title: string;
+  desc: string;
+  status: string;
+}
+
+interface User {
+  username: string;
+}
 
 function Dashboard() {
-  const { user } = useGlobalContext();
-  const [tasks, setTasks] = useState([]);
+  const { user } = useGlobalContext<{ user: User }>();
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { formatCreatedAt } = useFormatDate();
   const router = useRouter();
-  const taskRefs = useRef([]);
+  const taskRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { isSidebarOpen } = useSidebar();
 
   const fetchTasks = async () => {
     try {
-      const latestTasks = await getLatestTasks();
+      const latestTasks: Task[] = await getLatestTasks();
       setTasks(latestTasks);
-      if (latestTasks !== "") {
+      if (latestTasks.length > 0) {
         setIsLoading(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error fetching tasks", error.message);
     }
   };
@@ -38,21 +52,7 @@ function Dashboard() {
     fetchTasks();
   }, []);
 
-  const formatCreatedAt = (createdAt) => {
-    if (!createdAt) return "";
-
-    const dateObj = new Date(createdAt);
-
-    const day = dateObj.getDate();
-    const month = dateObj.getMonth() + 1;
-    const year = dateObj.getFullYear();
-
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-    return `${month}/${day}/${year}, ${hours}:${minutes}`;
-  };
-
-  const handleOpenTaskPage = (taskId) => {
+  const handleOpenTaskPage = (taskId: string) => {
     router.push(`/tasks/${taskId}`);
   };
 
@@ -86,7 +86,7 @@ function Dashboard() {
     });
   }, [tasks]);
 
-  const handleMouseMove = (event, ref) => {
+  const handleMouseMove = (event: MouseEvent, ref: HTMLDivElement) => {
     const rect = ref.getBoundingClientRect();
     const x = event.clientX - rect.left - rect.width / 2;
     const y = event.clientY - rect.top - rect.height / 2;
@@ -115,7 +115,7 @@ function Dashboard() {
             <span className=" text-newTextColor-7-1 ">{user?.username}</span>
           </h1>
 
-          <div className="flex flex-col md:flex-row gap-4 border rounded-sm p-5">
+          <div className="flex flex-col lg:flex-col xl:flex-row  gap-4 border rounded-sm p-5">
             <div className="border rounded-md p-4 shadow-md">
               <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-4">
                 <div className="flex gap-2 items-center">

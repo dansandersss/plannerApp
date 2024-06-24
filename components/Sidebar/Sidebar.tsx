@@ -154,7 +154,7 @@ const Sidebar = () => {
           >
             <FontAwesomeIcon
               onClick={() => setIsSidebarOpen(true)}
-              className={` text-white`}
+              className={` text-white cursor-pointer`}
               icon={faMagnifyingGlass}
             />
             <div className={`${isSidebarOpen ? "flex" : "hidden"}`}>
@@ -167,7 +167,15 @@ const Sidebar = () => {
             className="text-white justify-center flex items-center mt-[200px] gap-4 hover:gap-5 transition-all ease-in-out duration-200"
           >
             <FontAwesomeIcon icon={faRightFromBracket} />
-            <p className={`${isSidebarOpen ? "block" : "hidden"}`}>LogOut</p>
+            <p
+              className={`${
+                isSidebarOpen || (!isSidebarOpen && windowWidth >= 1024)
+                  ? "block"
+                  : "hidden"
+              }`}
+            >
+              LogOut
+            </p>
           </button>
         </div>
       </section>

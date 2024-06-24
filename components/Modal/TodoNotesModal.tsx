@@ -116,12 +116,13 @@ const TodoNotesModal: React.FC<BasicModalProps> = ({
           id="modal-modal-title"
           variant="h6"
           component="h2"
-          sx={{
-            color: "black",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
+          // sx={{
+          //   color: "black",
+          //   display: "flex",
+          //   alignItems: "center",
+          //   justifyContent: "space-between",
+          // }}
+          className=" flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between sm:gap-0"
         >
           <h2 className="text-lg after:absolute after:w-full after:bg-newBgColor-7-1  relative font-bold after:bottom-0 after:left-0 after:h-[2px] after:rounded-md rounded-md ">
             Add new {text}

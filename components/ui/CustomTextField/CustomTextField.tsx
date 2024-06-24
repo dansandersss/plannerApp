@@ -24,14 +24,11 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
     transform: "translate(10px, 7px) scale(1)",
   },
   "& .MuiInputLabel-root.Mui-focused": {
+    transform: "translate(14px, -10px) scale(0.75)",
     color: "#FF6767",
   },
   "& .MuiInputLabel-root.MuiFormLabel-filled": {
-    transform: "translate(14px, -3px) scale(0.75)",
-  },
-  "& .MuiInputLabel-root.Mui-focused": {
     transform: "translate(14px, -10px) scale(0.75)",
-    color: "#FF6767",
   },
   "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
     borderColor: "#FF6767",
@@ -55,7 +52,7 @@ export default function MyCustomTextField({
       variant={variant}
       value={value}
       onChange={onChange}
-      className="w-[60%] py-2"
+      className="w-90 sm:w-[60%] py-2"
     />
   );
 }

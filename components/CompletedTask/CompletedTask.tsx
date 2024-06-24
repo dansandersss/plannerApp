@@ -4,19 +4,39 @@ import { getCompletedTasks } from "@/lib/appwrite";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 
+interface Task {
+  $updatedAt: string;
+  title: string;
+  desc: string;
+  status: string;
+}
+
+interface Document {
+  $updatedAt: string;
+  [key: string]: any;
+}
+
 function CompletedTask() {
   const maxLength = 100;
-  const [latestCompletedTask, setLatestCompletedTask] = useState(null);
+  const [latestCompletedTask, setLatestCompletedTask] = useState<Task | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchLatestCompletedTask = async () => {
       try {
-        const completedTasks = await getCompletedTasks();
+        const completedTasks: Document[] = await getCompletedTasks();
 
         if (completedTasks.length > 0) {
-          setLatestCompletedTask(completedTasks[0]);
+          const task: Task = {
+            $updatedAt: completedTasks[0].$updatedAt,
+            title: completedTasks[0].title,
+            desc: completedTasks[0].desc,
+            status: completedTasks[0].status,
+          };
+          setLatestCompletedTask(task);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.log("Error fetching latest completed task", error.message);
       }
     };
@@ -30,37 +50,35 @@ function CompletedTask() {
   const timeAgo = formatDistanceToNow(new Date(latestCompletedTask.$updatedAt));
 
   return (
-    <>
-      <div className="mb-4 relative">
-        <div
-          className={`w-3 h-3 rounded-full fill-none absolute border-2 top-0 -left-2 border-priorityColor-low`}
-        ></div>
+    <div className="mb-4 relative">
+      <div
+        className={`w-3 h-3 rounded-full fill-none absolute border-2 top-0 -left-2 border-priorityColor-low`}
+      ></div>
 
-        <div className="ml-4">
-          <h3 className="text-lg font-bold">{latestCompletedTask.title}</h3>
+      <div className="ml-4">
+        <h3 className="text-lg font-bold">{latestCompletedTask.title}</h3>
+        <p>
+          {latestCompletedTask.desc.length > maxLength
+            ? `${latestCompletedTask.desc.substring(0, maxLength)}...`
+            : latestCompletedTask.desc}
+        </p>
+        <div className="flex justify-between items-center mt-2 border-b-2 pb-4">
           <p>
-            {latestCompletedTask.desc.length > maxLength
-              ? `${latestCompletedTask.desc.substring(0, maxLength)}...`
-              : latestCompletedTask.desc}
+            Status: <br />
+            <span className="text-sm text-priorityColor-low opacity-75">
+              {latestCompletedTask.status}
+            </span>
           </p>
-          <div className="flex justify-between items-center mt-2 border-b-2 pb-4">
-            <p>
-              Status: <br />
-              <span className="text-sm text-priorityColor-low opacity-75">
-                {latestCompletedTask.status}
-              </span>
-            </p>
 
-            <p>
-              Completed: <br />
-              <span className="text-sm text-gray-600 opacity-75">
-                {timeAgo} ago
-              </span>
-            </p>
-          </div>
+          <p>
+            Completed: <br />
+            <span className="text-sm text-gray-600 opacity-75">
+              {timeAgo} ago
+            </span>
+          </p>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

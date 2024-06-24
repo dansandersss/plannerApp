@@ -4,7 +4,11 @@ import { TailSpin } from "react-loader-spinner";
 import "./loader.css";
 import images from "@/constants/images";
 
-const LoaderForPages = ({ loadingTime }) => {
+interface LoaderForPagesProps {
+  loadingTime: number;
+}
+
+const LoaderForPages: React.FC<LoaderForPagesProps> = ({ loadingTime }) => {
   const [progress, setProgress] = useState(0);
   useEffect(() => {
     const duration = loadingTime * 1000;

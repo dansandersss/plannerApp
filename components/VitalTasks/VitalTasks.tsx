@@ -16,7 +16,6 @@ function VitalTasks() {
   const [isEdited, setIsEdited] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState({});
-  const [tags, setTags] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { isSidebarOpen } = useSidebar();
 
@@ -100,8 +99,8 @@ function VitalTasks() {
         <section
           className={`mt-4 lg:mt-16 transition-all ease-in-out duration-200 lg:translate-x-0 ml-14 pb-4 ${
             isSidebarOpen
-              ? "translate-x-8 md:translate-x-4"
-              : "-translate-x-16 md:-translate-x-24"
+              ? "translate-x-16 sm:translate-x-6 md:translate-x-6"
+              : "translate-x-8 sm:translate-x-4 md:translate-x-4"
           }`}
         >
           <h1 className="text-black text-4xl font-bold mb-4">
@@ -109,8 +108,8 @@ function VitalTasks() {
             you have {tasks.length} vital tasks{" "}
           </h1>
 
-          <div className="flex gap-4">
-            <div className="border w-[55%] rounded-md p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="border w-[80%] sm:w-[55%] rounded-md p-4">
               <div>
                 {tasks.length ? (
                   tasks.map((task) => (
@@ -134,7 +133,7 @@ function VitalTasks() {
               </div>
             </div>
 
-            <div className="w-[45%]">
+            <div className="w-[80%] sm:w-[45%]">
               {selectedTask && (
                 <TaskDetail
                   deleteTask={() => {

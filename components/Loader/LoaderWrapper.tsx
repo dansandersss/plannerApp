@@ -1,9 +1,13 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "./Loader";
 
-export default function LoadingWrapper({ children }) {
+interface LoadingWrapperProps {
+  children: ReactNode;
+}
+
+const LoadingWrapper: React.FC<LoadingWrapperProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -20,4 +24,6 @@ export default function LoadingWrapper({ children }) {
   }
 
   return <>{children}</>;
-}
+};
+
+export default LoadingWrapper;

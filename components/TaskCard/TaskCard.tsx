@@ -2,40 +2,19 @@
 import { updateTaskStatus } from "@/lib/appwrite";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
+import useFormatDate from "@/hooks/useFormatDate";
 
 function TaskCard({ task, onUpdate, disableClick }) {
   const maxLength = 100;
   const tagsLength = 2;
   const pathName = usePathname();
   const router = useRouter();
+  const { formatCreatedAt } = useFormatDate();
 
   const handleClick = () => {
     if (!disableClick) {
       router.push(`/tasks/${task.$id}`);
     }
-  };
-
-  // const handleCompleteTask = async () => {
-  //   try {
-  //     await updateTaskStatus(task.$id, "completed");
-  //     onUpdate();
-  //   } catch (error) {
-  //     console.error("Error completing task:", error);
-  //   }
-  // };
-
-  const formatCreatedAt = (createdAt) => {
-    if (!createdAt) return "";
-
-    const dateObj = new Date(createdAt);
-
-    const day = dateObj.getDate();
-    const month = dateObj.getMonth() + 1;
-    const year = dateObj.getFullYear();
-
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-    return `${month}/${day}/${year}, ${hours}:${minutes}`;
   };
 
   return (

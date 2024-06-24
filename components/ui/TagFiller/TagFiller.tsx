@@ -46,7 +46,6 @@ const InputWrapper = styled("div")(
     height: 50px;
     box-sizing: border-box;
     padding: 4px 10px;
-    width: 100%;
     min-width: 30px;
     flex-grow: 1;
     border: 0;
@@ -114,7 +113,7 @@ const TagFiller = ({ tags, onChange }) => {
   };
 
   return (
-    <Root>
+    <Root className="w-full sm:w-[60%]">
       <InputWrapper className={inputValue ? "focused" : ""}>
         {tags.map((tag, index) => (
           <StyledTag key={index}>

@@ -12,7 +12,6 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
 }));
 
 const CustomTextarea = styled(TextareaAutosize)(({ theme }) => ({
-  width: "60%",
   minHeight: "100px",
   padding: "10px 10px",
   resize: "none",
@@ -33,6 +32,7 @@ export default function MyTextArea({ value, onChange, placeholder }) {
       value={value}
       onChange={onChange}
       placeholder={placeholder}
+      className=" w-full sm:w-[60%] "
     />
   );
 }
