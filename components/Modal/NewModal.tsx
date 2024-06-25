@@ -1,9 +1,9 @@
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { addTask } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { useEffect, useState } from "react";
 import MyCustomTextField from "../ui/CustomTextField/CustomTextField";
 import TagFiller from "../ui/TagFiller/TagFiller";
 import MyTextArea from "../ui/CustomTextArea/CustomTextArea";
@@ -47,17 +47,17 @@ interface BasicModalProps {
 }
 
 const BasicModal: React.FC<BasicModalProps> = ({ isOpen, onClose }) => {
-  const [title, setTitle] = useState("");
-  const [priority, setPriority] = useState("");
-  const { user } = useGlobalContext();
-  const [textareaValue, setTextareaValue] = useState("");
-  const [tags, setTags] = useState([]);
+  const [title, setTitle] = useState<string>("");
+  const [priority, setPriority] = useState<string>("");
+  const { user } = useGlobalContext<{ user: User }>();
+  const [textareaValue, setTextareaValue] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
 
   if (!isOpen) return null;
 
   const users = user?.$id;
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
@@ -74,15 +74,15 @@ const BasicModal: React.FC<BasicModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
-  const handleTextareaChange = (e) => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextareaValue(e.target.value);
   };
 
-  const handleTagsChange = (newTags) => {
+  const handleTagsChange = (newTags: string[]) => {
     setTags(newTags);
   };
 
@@ -98,15 +98,9 @@ const BasicModal: React.FC<BasicModalProps> = ({ isOpen, onClose }) => {
           id="modal-modal-title"
           variant="h6"
           component="h2"
-          // sx={{
-          //   color: "black",
-          //   display: "flex",
-          //   alignItems: "center",
-          //   justifyContent: "space-between",
-          // }}
-          className=" flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between sm:gap-0"
+          className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between sm:gap-0"
         >
-          <h2 className="text-lg after:absolute after:w-full after:bg-newBgColor-7-1  relative font-bold after:bottom-0 after:left-0 after:h-[2px] after:rounded-md rounded-md ">
+          <h2 className="text-lg after:absolute after:w-full after:bg-newBgColor-7-1 relative font-bold after:bottom-0 after:left-0 after:h-[2px] after:rounded-md rounded-md">
             Add new task
           </h2>
           <p
@@ -146,7 +140,7 @@ const BasicModal: React.FC<BasicModalProps> = ({ isOpen, onClose }) => {
               />
             </div>
 
-            <div className="mb-4 ">
+            <div className="mb-4">
               <FormControl component="fieldset" sx={{ color: "#010101" }}>
                 <CustomFormLabel
                   component="legend"

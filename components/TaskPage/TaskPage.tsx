@@ -75,7 +75,6 @@ const TaskPage = () => {
   };
 
   const handleEditTask = () => {
-    setEditedTask(task);
     setIsEditing(true);
   };
 
@@ -84,7 +83,8 @@ const TaskPage = () => {
     setEditedTask((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateTask = async () => {
+  const handleUpdateTask = async (e) => {
+    e.preventDefault();
     const updatedData = {
       title: editedTask.title,
       desc: editedTask.desc,
@@ -112,7 +112,7 @@ const TaskPage = () => {
         className={`mt-4 transition-all duration-200 ease-in-out md:mt-[70px] ml-0 md:ml-14 ${
           isSidebarOpen
             ? "translate-x-24 md:translate-x-0"
-            : "-translate-x-4 md:-translate-x-4"
+            : "-translate-x-4 md:-translate-x-2"
         }`}
       >
         <div className="border p-4 rounded-md">
@@ -150,7 +150,9 @@ const TaskPage = () => {
                     ? "text-priorityColor-low"
                     : "text-priorityColor-medium"
                 }`}
-              >{`${task.status === "in-progress" && "In Progress"}`}</span>
+              >{`${
+                task.status === "in-progress" ? "In Progress" : "Completed"
+              }`}</span>
             </p>
             <p className="text-slate-400">
               Created on: {formatCreatedAt(task.$createdAt)}
@@ -173,7 +175,7 @@ const TaskPage = () => {
             </div>
             <div
               onClick={handleEditTask}
-              className="bg-newBgColor-7-1  rounded-md hover:scale-75 hover:bg-newBgColor-7-2 transition-all duration-200 ease-in-out py-3 px-4 cursor-pointer"
+              className="bg-newBgColor-7-1 rounded-md hover:scale-75 hover:bg-newBgColor-7-2 transition-all duration-200 ease-in-out py-3 px-4 cursor-pointer"
             >
               <FontAwesomeIcon
                 className="text-xl text-white"
@@ -194,19 +196,20 @@ const TaskPage = () => {
             Task has been successfully edited.
           </div>
         )}
-
-        {isEditing && (
-          <ModalEdit
-            editedTitle={editedTask.title}
-            onChange={handleChange}
-            editedDesc={editedTask.desc}
-            editedPriority={editedTask.priority}
-            editedStatus={editedTask.status}
-            isEditing={setIsEditing}
-            updateTask={handleUpdateTask}
-          />
-        )}
       </section>
+
+      {isEditing && (
+        <ModalEdit
+          isEditing={setIsEditing}
+          onClose={() => setIsEditing(false)}
+          editedTitle={editedTask.title}
+          onChange={handleChange}
+          editedDesc={editedTask.desc}
+          editedPriority={editedTask.priority}
+          editedStatus={editedTask.status}
+          updateTask={handleUpdateTask}
+        />
+      )}
     </>
   );
 };

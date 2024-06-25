@@ -81,7 +81,8 @@ function MyTasks() {
     setEditedTask((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateTask = async () => {
+  const handleUpdateTask = async (e) => {
+    e.preventDefault();
     if (!selectedTask) return;
 
     const updatedData = {
@@ -97,6 +98,7 @@ function MyTasks() {
         task.$id === selectedTask.$id ? updatedTask : task
       );
       setTasks(updatedTasks);
+      setSelectedTask(updatedTask);
       setIsEditing(false);
       setIsEdited(true);
 
@@ -179,7 +181,6 @@ function MyTasks() {
           editedStatus={editedTask.status || ""}
           isEditing={setIsEditing}
           updateTask={handleUpdateTask}
-          editedTags={selectedTask?.tags || []}
         />
       )}
     </>

@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { usePathname, useRouter } from "next/navigation";
-import { getAllTasks, getCurrentUser, signOut } from "@/lib/appwrite";
+import { getCurrentUser, signOut } from "@/lib/appwrite";
 import BasicModal from "../Modal/NewModal";
 import { links } from "../../constants/linkInfo";
 import Search from "../ui/SearchInput/Search";

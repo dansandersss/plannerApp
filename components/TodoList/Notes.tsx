@@ -109,7 +109,8 @@ function Notes() {
     setEditedNote(null);
   };
 
-  const handleUpdateNote = async () => {
+  const handleUpdateNote = async (e) => {
+    e.preventDefault();
     const updatedData = {
       title: editedNote.title,
       desc: editedNote.desc,
@@ -215,32 +216,32 @@ function Notes() {
               <p>No notes available</p>
             )}
           </div>
-
-          {editedNote && (
-            <ModalEditForNotes
-              editedTitle={editedNote.title}
-              editedDesc={editedNote.desc}
-              onChange={(e) => {
-                const { name, value } = e.target;
-                setEditedNote((prevNote) => ({
-                  ...prevNote,
-                  [name]: value,
-                }));
-              }}
-              closeEdit={handleCloseEditModal}
-              updateNote={handleUpdateNote}
-            />
-          )}
-
-          <TodoNotesModal
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            text={"note"}
-            submit={onSubmit}
-            desc={descExists}
-          />
         </section>
       )}
+      {editedNote && (
+        <ModalEditForNotes
+          isEditing={editedNote}
+          editedTitle={editedNote.title}
+          editedDesc={editedNote.desc}
+          onChange={(e) => {
+            const { name, value } = e.target;
+            setEditedNote((prevNote) => ({
+              ...prevNote,
+              [name]: value,
+            }));
+          }}
+          closeEdit={handleCloseEditModal}
+          updateNote={handleUpdateNote}
+        />
+      )}
+
+      <TodoNotesModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        text={"note"}
+        submit={onSubmit}
+        desc={descExists}
+      />
     </>
   );
 }

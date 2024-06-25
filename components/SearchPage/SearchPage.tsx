@@ -8,11 +8,20 @@ import { useParams } from "next/navigation";
 import LoaderForPages from "../Loader/LoaderForPages";
 import { useSidebar } from "../Sidebar/SidebarContext";
 
+interface Task {
+  $id: string;
+  title: string;
+  desc: string;
+  priority: string;
+  status: string;
+  tags: string[];
+  [key: string]: any;
+}
+
 function SearchPage() {
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasResults, setHasResults] = useState(false);
-  const router = useRouter();
   const { query } = useParams();
   const { isSidebarOpen } = useSidebar();
 
@@ -21,15 +30,12 @@ function SearchPage() {
       try {
         if (query) {
           const posts = await searchPosts(query);
-          if (posts.length > 0) {
-            setSearchResults(posts);
-            setHasResults(true);
-          } else {
-            setHasResults(false);
-          }
+          setSearchResults(posts);
+          setHasResults(posts.length > 0);
         }
       } catch (error) {
         console.error("Error fetching search results", error);
+        setHasResults(false);
       } finally {
         setIsLoading(false);
       }
@@ -58,7 +64,7 @@ function SearchPage() {
                 <TaskCard key={task.$id} task={task} />
               ))
             ) : (
-              <p>No results found</p>
+              <p>No results found for "{query}"</p>
             )}
           </div>
         </section>

@@ -61,7 +61,8 @@ function VitalTasks() {
     setEditedTask((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateTask = async () => {
+  const handleUpdateTask = async (e) => {
+    e.preventDefault();
     const updatedData = {
       title: editedTask.title,
       desc: editedTask.desc,
@@ -75,6 +76,7 @@ function VitalTasks() {
         task.$id === selectedTask.$id ? updatedTask : task
       );
       setTasks(updatedTasks);
+      setSelectedTask(updatedTask);
       setIsEditing(false);
       setIsEdited(true);
 
@@ -146,20 +148,19 @@ function VitalTasks() {
               )}
             </div>
           </div>
-
-          {isEditing && (
-            <ModalEdit
-              editedTitle={editedTask.title}
-              onChange={handleChange}
-              editedDesc={editedTask.desc}
-              editedPriority={editedTask.priority}
-              editedStatus={editedTask.status}
-              isEditing={setIsEditing}
-              updateTask={handleUpdateTask}
-              editedTags={selectedTask.tags}
-            />
-          )}
         </section>
+      )}
+      {isEditing && (
+        <ModalEdit
+          editedTitle={editedTask.title}
+          onChange={handleChange}
+          editedDesc={editedTask.desc}
+          editedPriority={editedTask.priority}
+          editedStatus={editedTask.status}
+          isEditing={setIsEditing}
+          updateTask={handleUpdateTask}
+          editedTags={selectedTask.tags}
+        />
       )}
     </>
   );

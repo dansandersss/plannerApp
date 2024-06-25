@@ -1,28 +1,14 @@
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import { addTask } from "@/lib/appwrite";
 import { useGlobalContext } from "@/context/GlobalProvider";
-import { useState } from "react";
 import MyCustomTextField from "../ui/CustomTextField/CustomTextField";
 import TagFiller from "../ui/TagFiller/TagFiller";
 import MyTextArea from "../ui/CustomTextArea/CustomTextArea";
-import {
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormControl,
-  FormLabel,
-} from "@mui/material";
 import { styled } from "@mui/material";
 
-const CustomRadio = styled(Radio)(({ theme }) => ({
-  "&.Mui-checked": {
-    color: "#FF6767",
-  },
-}));
-
-const CustomFormLabel = styled(FormLabel)(({ theme }) => ({
+const CustomFormLabel = styled("label")(({ theme }) => ({
   "&.Mui-focused": {
     color: "#FF6767",
   },
@@ -46,6 +32,9 @@ const style = {
 interface BasicModalProps {
   isOpen: boolean;
   onClose: () => void;
+  text: string;
+  submit: (data: any) => Promise<void>;
+  desc?: boolean;
 }
 
 const TodoNotesModal: React.FC<BasicModalProps> = ({
@@ -53,21 +42,21 @@ const TodoNotesModal: React.FC<BasicModalProps> = ({
   onClose,
   text,
   submit,
-  desc,
+  desc = true,
 }) => {
   const [title, setTitle] = useState("");
-  const { user } = useGlobalContext();
+  const { user } = useGlobalContext<{ user: { $id: string } }>();
   const [textareaValue, setTextareaValue] = useState("");
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   if (!isOpen) return null;
 
-  const users = user?.$id;
+  const users = user?.$id || ""; // получаем $id пользователя или пустую строку
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const todoNotesData = {
+    const todoNotesData: any = {
       title,
       tags,
       users,
@@ -76,8 +65,6 @@ const TodoNotesModal: React.FC<BasicModalProps> = ({
     if (desc) {
       todoNotesData.desc = textareaValue;
     }
-
-    console.log(todoNotesData);
 
     try {
       await submit(todoNotesData);
@@ -92,15 +79,15 @@ const TodoNotesModal: React.FC<BasicModalProps> = ({
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
 
-  const handleTextareaChange = (e) => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextareaValue(e.target.value);
   };
 
-  const handleTagsChange = (newTags) => {
+  const handleTagsChange = (newTags: string[]) => {
     setTags(newTags);
   };
 
@@ -116,15 +103,9 @@ const TodoNotesModal: React.FC<BasicModalProps> = ({
           id="modal-modal-title"
           variant="h6"
           component="h2"
-          // sx={{
-          //   color: "black",
-          //   display: "flex",
-          //   alignItems: "center",
-          //   justifyContent: "space-between",
-          // }}
-          className=" flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between sm:gap-0"
+          className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between sm:gap-0"
         >
-          <h2 className="text-lg after:absolute after:w-full after:bg-newBgColor-7-1  relative font-bold after:bottom-0 after:left-0 after:h-[2px] after:rounded-md rounded-md ">
+          <h2 className="text-lg after:absolute after:w-full after:bg-newBgColor-7-1 relative font-bold after:bottom-0 after:left-0 after:h-[2px] after:rounded-md rounded-md">
             Add new {text}
           </h2>
           <p
@@ -153,50 +134,18 @@ const TodoNotesModal: React.FC<BasicModalProps> = ({
               <TagFiller tags={tags} onChange={handleTagsChange} />
             </div>
 
-            <div className={`mb-4 ${desc === false ? "hidden" : "block"}`}>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <MyTextArea
-                value={textareaValue}
-                onChange={handleTextareaChange}
-                placeholder="Describe your task..."
-              />
-            </div>
-
-            {/* <div className="mb-4 ">
-              <FormControl component="fieldset" sx={{ color: "#010101" }}>
-                <CustomFormLabel
-                  component="legend"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Priority:
-                </CustomFormLabel>
-                <RadioGroup
-                  row
-                  aria-label="priority"
-                  name="priority"
-                  value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
-                >
-                  <FormControlLabel
-                    value="Low"
-                    control={<CustomRadio />}
-                    label="Low"
-                  />
-                  <FormControlLabel
-                    value="Medium"
-                    control={<CustomRadio />}
-                    label="Medium"
-                  />
-                  <FormControlLabel
-                    value="High"
-                    control={<CustomRadio />}
-                    label="High"
-                  />
-                </RadioGroup>
-              </FormControl>
-            </div> */}
+            {desc && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Description
+                </label>
+                <MyTextArea
+                  value={textareaValue}
+                  onChange={handleTextareaChange}
+                  placeholder="Describe your task..."
+                />
+              </div>
+            )}
 
             <div className="flex">
               <button
