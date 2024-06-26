@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, KeyboardEvent, ChangeEvent } from "react";
 import { styled } from "@mui/material/styles";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -20,16 +20,11 @@ const InputWrapper = styled("div")(
   padding: 1px;
   display: flex;
   flex-wrap: wrap;
-	width: 100%;
+  width: 100%;
 
   &:hover {
     border-color: #FF6767;
   }
-
-	"& .MuiInputLabel-root": {
-    color: "#ccc",
-    transform: "translate(10px, 14px) scale(1)",
-  },
 
   &.focused {
     border-color: #FF6767;
@@ -95,10 +90,15 @@ const StyledTag = styled("div")(
 `
 );
 
-const TagFiller = ({ tags, onChange }) => {
-  const [inputValue, setInputValue] = useState("");
+interface TagFillerProps {
+  tags: string[];
+  onChange: (tags: string[]) => void;
+}
 
-  const handleKeyDown = (event) => {
+const TagFiller: React.FC<TagFillerProps> = ({ tags, onChange }) => {
+  const [inputValue, setInputValue] = useState<string>("");
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && inputValue.trim()) {
       event.preventDefault();
       const newTags = [...tags, inputValue.trim()];
@@ -107,7 +107,7 @@ const TagFiller = ({ tags, onChange }) => {
     }
   };
 
-  const handleDelete = (index) => {
+  const handleDelete = (index: number) => {
     const newTags = tags.filter((_, i) => i !== index);
     onChange(newTags);
   };
@@ -123,7 +123,9 @@ const TagFiller = ({ tags, onChange }) => {
         ))}
         <input
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setInputValue(e.target.value)
+          }
           onKeyDown={handleKeyDown}
           placeholder="Enter a tag"
         />

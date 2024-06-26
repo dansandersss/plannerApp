@@ -1,6 +1,5 @@
 "use client";
 import icons from "@/constants/icons";
-import useFormatDate from "@/hooks/useFormatDate";
 import {
   addNote,
   deleteNoteById,
@@ -13,51 +12,60 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, MouseEvent, ChangeEvent } from "react";
 import TodoNotesModal from "../Modal/TodoNotesModal";
 import useDateForTodoNotes from "@/hooks/useDateForTodoNotes";
 import ModalEditForNotes from "../ModalEdit/ModalEditForNotes";
 import LoaderForPages from "../Loader/LoaderForPages";
 import { useSidebar } from "../Sidebar/SidebarContext";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
-function Notes() {
-  const [notes, setNotes] = useState([]);
+interface Note {
+  $id: string;
+  title: string;
+  desc: string;
+  $createdAt: string;
+  tags: string[];
+}
+
+const Notes: React.FC = () => {
+  const [notes, setNotes] = useState<Note[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { formatCreatedAt } = useDateForTodoNotes();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [descExists, setDescExists] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
-  const [editedNote, setEditedNote] = useState(null);
+  const [editedNote, setEditedNote] = useState<Note | null>(null);
   const [editModal, setEditModal] = useState(false);
-  const [selectedNoteId, setSelectedNoteId] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const { isSidebarOpen } = useSidebar();
+  const { user } = useGlobalContext();
 
-  const fetchAllNotes = async () => {
+  const fetchAllNotes = async (userId: string) => {
     try {
-      const notesList = await getAllNotes();
+      const notesList = await getAllNotes(userId);
       setNotes(notesList);
-      if (notes !== "") {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     } catch (error) {
       console.log("Error fetching notes", error.message);
     }
   };
 
   useEffect(() => {
-    fetchAllNotes();
-  }, []);
+    if (user && user.$id) {
+      fetchAllNotes(user.$id);
+    }
+  }, [user]);
 
-  const onSubmit = async (noteData) => {
+  const onSubmit = async (noteData: Note) => {
     try {
       await addNote(noteData);
+      fetchAllNotes();
     } catch (error) {
       console.log(error.message);
     }
-
-    fetchAllNotes();
   };
 
   const handleOpenModal = () => {
@@ -68,14 +76,12 @@ function Notes() {
     setIsModalOpen(false);
   };
 
-  const handleOpenMenu = (index) => {
+  const handleOpenMenu = (index: number) => {
     setSelectedIndex(index);
     setMenuOpen(!menuOpen);
-
-    console.log(index);
   };
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (event: MouseEvent) => {
     event.stopPropagation();
   };
 
@@ -83,50 +89,52 @@ function Notes() {
     setMenuOpen(false);
   };
 
-  const handleDelete = async (noteId) => {
+  const handleDelete = async (noteId: string) => {
     try {
       await deleteNoteById(noteId);
       setIsDeleted(true);
       setMenuOpen(false);
       fetchAllNotes();
     } catch (error) {
-      console.error("Error deleting task:", error.message);
+      console.error("Error deleting note:", error.message);
     }
   };
 
-  const handleEditNote = (note) => {
+  const handleEditNote = (note: Note) => {
     setEditedNote({
-      title: note.title,
-      desc: note.desc,
+      ...note,
     });
     setSelectedNoteId(note.$id);
     setEditModal(true);
-    setMenuOpen(!menuOpen);
+    setMenuOpen(false);
   };
 
   const handleCloseEditModal = () => {
-    setEditModal(!editModal);
+    setEditModal(false);
     setEditedNote(null);
   };
 
-  const handleUpdateNote = async (e) => {
+  const handleUpdateNote = async (e: MouseEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!selectedNoteId || !editedNote) return;
+
     const updatedData = {
       title: editedNote.title,
       desc: editedNote.desc,
     };
+
     try {
-      const updateNote = await updateNoteById(selectedNoteId, updatedData);
-      const updatedNotes = notes.map((note) =>
-        note.$id === selectedNoteId ? updateNote : note
+      const updatedNote = await updateNoteById(selectedNoteId, updatedData);
+      setNotes((prevNotes) =>
+        prevNotes.map((note) =>
+          note.$id === selectedNoteId ? updatedNote : note
+        )
       );
-      setNotes(updatedNotes);
       setEditModal(false);
       setEditedNote(null);
     } catch (error) {
       console.error("Error updating note", error.message);
     }
-    setEditModal(false);
   };
 
   return (
@@ -142,7 +150,7 @@ function Notes() {
           }`}
         >
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-black relative text-2xl font-bold  ">
+            <h1 className="text-black relative text-2xl font-bold">
               <span className="mr-2">
                 <FontAwesomeIcon
                   className="text-newTextColor-7-1"
@@ -155,7 +163,7 @@ function Notes() {
               className="bg-newBgColor-7-1 px-2 py-1 rounded-md cursor-pointer text-newTextColor-7-2 hover:bg-newBgColor-7-2 hover:text-newBgColor-7-1 transition-all ease-in-out duration-200"
               onClick={handleOpenModal}
             >
-              <FontAwesomeIcon className="" icon={faPlus} />
+              <FontAwesomeIcon icon={faPlus} />
             </div>
           </div>
 
@@ -188,13 +196,13 @@ function Notes() {
                             onClick={handleMenuClick}
                           >
                             <button
-                              onClick={() => handleEditNote(note)} // Исправлено на использование замыкания
+                              onClick={() => handleEditNote(note)}
                               className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left border-b-2"
                             >
                               Edit
                             </button>
                             <button
-                              onClick={() => handleDelete(note.$id)} // Исправлено на использование замыкания
+                              onClick={() => handleDelete(note.$id)}
                               className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
                             >
                               Delete
@@ -220,15 +228,14 @@ function Notes() {
       )}
       {editedNote && (
         <ModalEditForNotes
-          isEditing={editedNote}
+          isEditing={editModal}
           editedTitle={editedNote.title}
           editedDesc={editedNote.desc}
-          onChange={(e) => {
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
             const { name, value } = e.target;
-            setEditedNote((prevNote) => ({
-              ...prevNote,
-              [name]: value,
-            }));
+            setEditedNote((prevNote) =>
+              prevNote ? { ...prevNote, [name]: value } : null
+            );
           }}
           closeEdit={handleCloseEditModal}
           updateNote={handleUpdateNote}
@@ -244,6 +251,6 @@ function Notes() {
       />
     </>
   );
-}
+};
 
 export default Notes;

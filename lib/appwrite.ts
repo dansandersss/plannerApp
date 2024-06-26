@@ -133,7 +133,7 @@ export const addTask = async (title, priority, tags, desc, users) => {
   }
 };
 
-export const getLatestTasks = async (limit = 2) => {
+export const getLatestTasks = async (limit = 2, currentUser) => {
   try {
     const tasks = await databases.listDocuments(
       config.databaseId,
@@ -142,6 +142,7 @@ export const getLatestTasks = async (limit = 2) => {
         Query.orderDesc("$createdAt"),
         Query.limit(limit),
         Query.notEqual("status", "completed"),
+        Query.equal("users", currentUser),
       ]
     );
     return tasks.documents || [];
@@ -277,12 +278,12 @@ export async function searchPosts(query) {
   }
 }
 
-export const getAllTodos = async () => {
+export const getAllTodos = async (currentUser) => {
   try {
     const allTodos = await databases.listDocuments(
       config.databaseId,
       config.todoCollectionId,
-      [Query.orderAsc("$createdAt")]
+      [Query.orderAsc("$createdAt"), Query.equal("users", currentUser)]
     );
     return allTodos.documents;
   } catch (error) {
@@ -291,12 +292,12 @@ export const getAllTodos = async () => {
   }
 };
 
-export const getAllNotes = async () => {
+export const getAllNotes = async (currentUser) => {
   try {
     const allTodos = await databases.listDocuments(
       config.databaseId,
       config.notesCollectionId,
-      [Query.orderDesc("$createdAt")]
+      [Query.orderDesc("$createdAt"), Query.equal("users", currentUser)]
     );
     return allTodos.documents;
   } catch (error) {

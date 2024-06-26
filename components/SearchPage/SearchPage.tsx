@@ -1,7 +1,6 @@
 "use client";
 
 import { searchPosts } from "@/lib/appwrite";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import { useParams } from "next/navigation";

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { TextField, styled } from "@mui/material";
 
 const CustomTextField = styled(TextField)(({ theme }) => ({
@@ -38,13 +38,21 @@ const CustomTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-export default function MyCustomTextField({
+interface MyCustomTextFieldProps {
+  id: string;
+  label: string;
+  variant: "outlined" | "filled" | "standard";
+  value: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const MyCustomTextField: React.FC<MyCustomTextFieldProps> = ({
   id,
   label,
   variant,
   value,
   onChange,
-}) {
+}) => {
   return (
     <CustomTextField
       id={id}
@@ -55,4 +63,6 @@ export default function MyCustomTextField({
       className="w-90 sm:w-[60%] py-2"
     />
   );
-}
+};
+
+export default MyCustomTextField;

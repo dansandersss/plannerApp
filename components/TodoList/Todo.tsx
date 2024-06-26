@@ -20,9 +20,16 @@ const CustomCheckBox = styled(Checkbox)({
   },
 });
 
-function Todo() {
-  const [todos, setTodos] = useState([]);
-  const [todosToDelete, setTodosToDelete] = useState(new Set());
+interface Todo {
+  $id: string;
+  title: string;
+  tags: string[];
+  $createdAt: string;
+}
+
+const Todo: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [todosToDelete, setTodosToDelete] = useState<Set<string>>(new Set());
   const { formatCreatedAt } = useDateForTodoNotes();
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,41 +37,40 @@ function Todo() {
   const { user } = useGlobalContext();
   const { isSidebarOpen } = useSidebar();
 
-  const users = user?.$id;
-
-  const fetchTodoList = async () => {
+  const fetchTodoList = async (userId: string) => {
     try {
-      const todoList = await getAllTodos();
+      const todoList = await getAllTodos(userId);
       setTodos(todoList);
-      if (todos !== "") {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     } catch (error) {
       console.log("Error fetching todo list", error.message);
     }
   };
 
   useEffect(() => {
-    fetchTodoList();
-  }, []);
+    if (user && user.$id) {
+      fetchTodoList(user.$id);
+    }
+  }, [user]);
 
-  const onSubmit = async (todoData) => {
+  const onSubmit = async (todoData: Todo) => {
     try {
       await addTodo(todoData);
+      fetchTodoList();
     } catch (error) {
       console.log(error.message);
     }
-    fetchTodoList();
   };
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  const handleCheckBoxChange = (todoId) => {
+  const handleCheckBoxChange = (todoId: string) => {
     setTodosToDelete((prev) => {
       const updated = new Set(prev);
       updated.add(todoId);
@@ -75,7 +81,7 @@ function Todo() {
     }, 5000);
   };
 
-  const deleteTodoItem = async (todoId) => {
+  const deleteTodoItem = async (todoId: string) => {
     try {
       await deleteTodo(todoId);
       setTodos((prevTodos) => prevTodos.filter((todo) => todo.$id !== todoId));
@@ -115,14 +121,17 @@ function Todo() {
               className="bg-newBgColor-7-1 px-2 py-1 rounded-md cursor-pointer text-newTextColor-7-2 hover:bg-newBgColor-7-2 hover:text-newBgColor-7-1 transition-all ease-in-out duration-200"
               onClick={handleOpenModal}
             >
-              <FontAwesomeIcon className="" icon={faPlus} />
+              <FontAwesomeIcon icon={faPlus} />
             </div>
           </div>
 
           <div className="overflow-y-auto max-h-[225px]">
             {todos.length ? (
-              todos.map((todo, index) => (
-                <div className="flex flex-col gap-4 mb-4 border bg-slate-100 rounded-md p-4 shadow-md">
+              todos.map((todo) => (
+                <div
+                  key={todo.$id}
+                  className="flex flex-col gap-4 mb-4 border bg-slate-100 rounded-md p-4 shadow-md"
+                >
                   <div>
                     <div className="flex items-center gap-2 mb-4">
                       <CustomCheckBox
@@ -130,7 +139,7 @@ function Todo() {
                         onChange={() => handleCheckBoxChange(todo.$id)}
                       />
                       <p
-                        className={`relative font-bold  ${
+                        className={`relative font-bold ${
                           todosToDelete.has(todo.$id)
                             ? "after:w-full after:h-[2px] after:bg-newBgColor-7-1 after:absolute after:top-[50%] after:left-0 after:rounded-md after:animate-expand"
                             : ""
@@ -144,7 +153,6 @@ function Todo() {
                       <p className="text-newTextColor-7-1">
                         {todo.tags.join(", ")}
                       </p>
-
                       <p>{formatCreatedAt(todo.$createdAt)}</p>
                     </div>
                   </div>
@@ -158,7 +166,7 @@ function Todo() {
           <TodoNotesModal
             isOpen={isModalOpen}
             onClose={handleCloseModal}
-            text={"todo"}
+            text="todo"
             submit={onSubmit}
             desc={descExists}
           />
@@ -166,6 +174,6 @@ function Todo() {
       )}
     </>
   );
-}
+};
 
 export default Todo;

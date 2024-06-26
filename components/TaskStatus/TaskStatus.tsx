@@ -6,10 +6,20 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-function TaskStatus() {
-  const [completedPercent, setCompletedPercent] = useState(0);
-  const [inProgressPercent, setInProgressPercent] = useState(0);
-  const [allTasks, setAllTasks] = useState([]);
+interface Task {
+  $id: string;
+  title: string;
+  desc: string;
+  priority: "Low" | "Medium" | "High";
+  status: "in-progress" | "completed";
+  $createdAt: string;
+  tags: string[];
+}
+
+const TaskStatus: React.FC = () => {
+  const [completedPercent, setCompletedPercent] = useState<number>(0);
+  const [inProgressPercent, setInProgressPercent] = useState<number>(0);
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
 
   const fetchAllTasks = async () => {
     try {
@@ -71,7 +81,7 @@ function TaskStatus() {
         position: "top",
       },
       tooltip: {
-        enabled: false, // Disable tooltip
+        enabled: false,
       },
     },
     layout: {
@@ -101,7 +111,6 @@ function TaskStatus() {
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-xl text-priorityColor-low">
             {Math.round(completedPercent)}%
           </div>
-
           <p className="text-sm">Completed Tasks</p>
         </div>
 
@@ -110,12 +119,11 @@ function TaskStatus() {
           <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 text-xl text-priorityColor-medium">
             {Math.round(inProgressPercent)}%
           </div>
-
           <p className="text-sm">Tasks In Progress</p>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default TaskStatus;

@@ -1,42 +1,58 @@
 "use client";
-import { useGlobalContext } from "@/context/GlobalProvider";
-import { deleteTaskById, getVitalTaks, updateTaskById } from "@/lib/appwrite";
 import React, { useEffect, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import TaskDetail from "../TaskDetail/TaskDetail";
 import ModalEdit from "../ModalEdit/ModalEdit";
 import LoaderForPages from "../Loader/LoaderForPages";
+import { useGlobalContext } from "@/context/GlobalProvider";
+import { deleteTaskById, getVitalTaks, updateTaskById } from "@/lib/appwrite";
 import { useSidebar } from "../Sidebar/SidebarContext";
+
+interface Task {
+  $id: string;
+  title: string;
+  desc: string;
+  priority: string;
+  status: string;
+  tags: string[];
+}
 
 function VitalTasks() {
   const { user } = useGlobalContext();
-  const [tasks, setTasks] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [isDeleted, setIsDeleted] = useState(false);
-  const [isEdited, setIsEdited] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedTask, setEditedTask] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isDeleted, setIsDeleted] = useState<boolean>(false);
+  const [isEdited, setIsEdited] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editedTask, setEditedTask] = useState<Task>({
+    $id: "",
+    title: "",
+    desc: "",
+    priority: "",
+    status: "",
+    tags: [],
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isSidebarOpen } = useSidebar();
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
   const fetchTasks = async () => {
     try {
       const vitalTasks = await getVitalTaks();
       setTasks(vitalTasks);
       if (vitalTasks.length > 0) {
-        setIsLoading(false);
         setSelectedTask(vitalTasks[0]);
       }
+      setIsLoading(false);
     } catch (error) {
       console.log("Error fetching tasks:", error.message);
     }
   };
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const handleDeleteTask = async (taskId) => {
+  const handleDeleteTask = async (taskId: string) => {
     try {
       await deleteTaskById(taskId);
       setIsDeleted(true);
@@ -46,22 +62,24 @@ function VitalTasks() {
     }
   };
 
-  const handleEditTask = (task) => {
+  const handleEditTask = (task: Task) => {
     setEditedTask({
+      $id: task.$id,
       title: task.title,
       desc: task.desc,
       priority: task.priority,
       status: task.status,
+      tags: task.tags,
     });
     setIsEditing(true);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditedTask((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateTask = async (e) => {
+  const handleUpdateTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const updatedData = {
       title: editedTask.title,
@@ -71,9 +89,12 @@ function VitalTasks() {
     };
 
     try {
-      const updatedTask = await updateTaskById(selectedTask.$id, updatedData); // Используем $id выбранной задачи для обновления
+      const updatedTask = await updateTaskById(
+        selectedTask?.$id || "",
+        updatedData
+      ); // Используем $id выбранной задачи для обновления
       const updatedTasks = tasks.map((task) =>
-        task.$id === selectedTask.$id ? updatedTask : task
+        task.$id === selectedTask?.$id ? updatedTask : task
       );
       setTasks(updatedTasks);
       setSelectedTask(updatedTask);
@@ -88,9 +109,11 @@ function VitalTasks() {
     }
   };
 
-  const handleTaskClick = (taskId) => {
+  const handleTaskClick = (taskId: string) => {
     const selected = tasks.find((task) => task.$id === taskId);
-    setSelectedTask(selected);
+    if (selected) {
+      setSelectedTask(selected);
+    }
   };
 
   return (
@@ -106,41 +129,40 @@ function VitalTasks() {
           }`}
         >
           <h1 className="text-black text-4xl font-bold mb-4">
-            <span className=" text-newTextColor-7-1 ">{user?.username}</span>,
-            you have {tasks.length} vital tasks{" "}
+            <span className="text-newTextColor-7-1">{user?.username}</span>, you
+            have {tasks.length} vital tasks{" "}
           </h1>
 
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="border w-[80%] sm:w-[55%] rounded-md p-4">
-              <div>
-                {tasks.length ? (
-                  tasks.map((task) => (
-                    <div>
-                      <div
-                        className="cursor-pointer"
-                        onClick={() => handleTaskClick(task.$id)}
-                      >
-                        <TaskCard
-                          onUpdate={fetchTasks}
-                          key={task.$id}
-                          task={task}
-                          disableClick={true}
-                        />
-                      </div>
+              {tasks.length ? (
+                tasks.map((task) => (
+                  <div key={task.$id}>
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => handleTaskClick(task.$id)}
+                    >
+                      <TaskCard
+                        onUpdate={fetchTasks}
+                        task={task}
+                        disableClick={true}
+                      />
                     </div>
-                  ))
-                ) : (
-                  <p>No tasks available</p>
-                )}
-              </div>
+                  </div>
+                ))
+              ) : (
+                <p>No tasks available</p>
+              )}
             </div>
 
             <div className="w-[80%] sm:w-[45%]">
               {selectedTask && (
                 <TaskDetail
                   deleteTask={() => {
-                    handleDeleteTask(selectedTask.$id);
-                    setSelectedTask(null);
+                    if (selectedTask.$id) {
+                      handleDeleteTask(selectedTask.$id);
+                      setSelectedTask(null);
+                    }
                   }}
                   editTask={() => handleEditTask(selectedTask)}
                   task={selectedTask}
@@ -159,7 +181,7 @@ function VitalTasks() {
           editedStatus={editedTask.status}
           isEditing={setIsEditing}
           updateTask={handleUpdateTask}
-          editedTags={selectedTask.tags}
+          editedTags={editedTask.tags}
         />
       )}
     </>

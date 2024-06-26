@@ -8,13 +8,22 @@ import icons from "@/constants/icons";
 import ModalEdit from "../ModalEdit/ModalEdit";
 import { useSidebar } from "../Sidebar/SidebarContext";
 
-const TaskPage = () => {
+interface Task {
+  $id: string;
+  title: string;
+  desc: string;
+  priority: "Low" | "Medium" | "High";
+  status: "in-progress" | "completed";
+  $createdAt: string;
+}
+
+const TaskPage: React.FC = () => {
   const { taskId } = useParams();
-  const [task, setTask] = useState(null);
+  const [task, setTask] = useState<Task | null>(null);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isEdited, setIsEdited] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedTask, setEditedTask] = useState({});
+  const [editedTask, setEditedTask] = useState<Partial<Task>>({});
   const router = useRouter();
   const { isSidebarOpen } = useSidebar();
 
@@ -43,7 +52,7 @@ const TaskPage = () => {
     return <p>Loading...</p>;
   }
 
-  const formatCreatedAt = (createdAt) => {
+  const formatCreatedAt = (createdAt: string): string => {
     if (!createdAt) return "";
 
     const dateObj = new Date(createdAt);
@@ -78,12 +87,14 @@ const TaskPage = () => {
     setIsEditing(true);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setEditedTask((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUpdateTask = async (e) => {
+  const handleUpdateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     const updatedData = {
       title: editedTask.title,
@@ -94,7 +105,7 @@ const TaskPage = () => {
 
     try {
       await updateTaskById(taskId, updatedData);
-      setTask((prev) => ({ ...prev, ...updatedData }));
+      setTask((prev) => ({ ...prev, ...updatedData } as Task));
       setIsEditing(false);
       setIsEdited(true);
 
@@ -109,10 +120,10 @@ const TaskPage = () => {
   return (
     <>
       <section
-        className={`mt-4 transition-all duration-200 ease-in-out md:mt-[70px] ml-0 md:ml-14 ${
+        className={`mt-4 w-[250px] sm:w-[400px] md:w-[550px] lg:max-w-[700px] xl:w-full transition-all duration-200 ease-in-out md:mt-[70px] ml-0 md:ml-14 ${
           isSidebarOpen
-            ? "translate-x-24 md:translate-x-0"
-            : "-translate-x-4 md:-translate-x-2"
+            ? "sm:translate-x-24"
+            : "translate-x-24 sm:translate-x-20 lg:-translate-x-8"
         }`}
       >
         <div className="border p-4 rounded-md">
@@ -122,7 +133,7 @@ const TaskPage = () => {
                 {task.title}
               </h1>
             </div>
-            <div className="cursor-pointer" onClick={() => handleGoBack()}>
+            <div className="cursor-pointer" onClick={handleGoBack}>
               <p>Go back</p>
             </div>
           </div>
@@ -150,16 +161,16 @@ const TaskPage = () => {
                     ? "text-priorityColor-low"
                     : "text-priorityColor-medium"
                 }`}
-              >{`${
-                task.status === "in-progress" ? "In Progress" : "Completed"
-              }`}</span>
+              >
+                {task.status === "in-progress" ? "In Progress" : "Completed"}
+              </span>
             </p>
             <p className="text-slate-400">
               Created on: {formatCreatedAt(task.$createdAt)}
             </p>
           </div>
 
-          <div>
+          <div className="mb-4">
             <p>{task.desc}</p>
           </div>
 
@@ -202,11 +213,11 @@ const TaskPage = () => {
         <ModalEdit
           isEditing={setIsEditing}
           onClose={() => setIsEditing(false)}
-          editedTitle={editedTask.title}
+          editedTitle={editedTask.title || ""}
           onChange={handleChange}
-          editedDesc={editedTask.desc}
-          editedPriority={editedTask.priority}
-          editedStatus={editedTask.status}
+          editedDesc={editedTask.desc || ""}
+          editedPriority={editedTask.priority || "Low"}
+          editedStatus={editedTask.status || "in-progress"}
           updateTask={handleUpdateTask}
         />
       )}

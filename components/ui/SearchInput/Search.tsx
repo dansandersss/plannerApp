@@ -28,40 +28,40 @@ const CustomTextField = styled(TextField)`
   }
 `;
 
-function Search() {
-  const [searchTerm, setSearchTerm] = useState("");
+const Search: React.FC = () => {
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const router = useRouter();
   const { isSidebarOpen } = useSidebar();
-  const [windowWidth, setWindowWidth] = useState(null);
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initialize windowWidth
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const textFieldStyle = {
     width:
-      isSidebarOpen && windowWidth >= 1024
+      isSidebarOpen && windowWidth && windowWidth >= 1024
         ? "200px"
         : isSidebarOpen
         ? "125px"
         : "200px",
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchTerm.trim() !== "") {
       router.push(`/tasks/search/${encodeURIComponent(searchTerm)}`);
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSearch(e);
+      handleSearch(e as unknown as React.FormEvent<HTMLFormElement>);
     }
   };
 
@@ -86,6 +86,6 @@ function Search() {
       />
     </Box>
   );
-}
+};
 
 export default Search;

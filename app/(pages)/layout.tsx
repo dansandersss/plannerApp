@@ -15,7 +15,10 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: "Task Flow",
-  description: "The best way to keep your thoughts clean",
+  description: "The best way to keep your tasks straight",
+  icons: {
+    icon: "/icons/Taskflow_logo.png",
+  },
 };
 
 export default function RootLayout({

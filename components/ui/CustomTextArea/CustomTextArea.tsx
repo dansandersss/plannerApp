@@ -1,15 +1,5 @@
-import React from "react";
-import { TextField, TextareaAutosize, styled } from "@mui/material";
-
-const CustomTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiInputBase-root": {
-    height: "36px", // Выбираем желаемую высоту
-  },
-  "& .MuiOutlinedInput-input": {
-    padding: "10px 14px", // Подбираем нужные отступы внутри input
-    textAlign: "center", // Выравниваем текст по центру
-  },
-}));
+import React, { ChangeEvent } from "react";
+import { TextareaAutosize, styled } from "@mui/material";
 
 const CustomTextarea = styled(TextareaAutosize)(({ theme }) => ({
   minHeight: "100px",
@@ -26,13 +16,25 @@ const CustomTextarea = styled(TextareaAutosize)(({ theme }) => ({
   },
 }));
 
-export default function MyTextArea({ value, onChange, placeholder }) {
+interface MyTextAreaProps {
+  value: string;
+  onChange: (event: ChangeEvent<HTMLTextAreaElement>) => void;
+  placeholder?: string;
+}
+
+const MyTextArea: React.FC<MyTextAreaProps> = ({
+  value,
+  onChange,
+  placeholder,
+}) => {
   return (
     <CustomTextarea
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className=" w-full sm:w-[60%] "
+      className="w-full sm:w-[60%]"
     />
   );
-}
+};
+
+export default MyTextArea;

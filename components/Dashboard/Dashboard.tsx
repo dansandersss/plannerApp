@@ -3,7 +3,7 @@ import icons from "@/constants/icons";
 import { useGlobalContext } from "@/context/GlobalProvider";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useEffect, useRef, useState, MutableRefObject } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TaskCard from "../TaskCard/TaskCard";
 import { getLatestTasks } from "@/lib/appwrite";
 import TaskStatus from "../TaskStatus/TaskStatus";
@@ -36,9 +36,10 @@ function Dashboard() {
   const taskRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { isSidebarOpen } = useSidebar();
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (userId: string) => {
     try {
-      const latestTasks: Task[] = await getLatestTasks();
+      const latestTasks: Task[] = await getLatestTasks(2, userId);
+      console.log(user.$id);
       setTasks(latestTasks);
       if (latestTasks.length > 0) {
         setIsLoading(false);
@@ -49,8 +50,10 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (user && user.$id) {
+      fetchTasks(user.$id);
+    }
+  }, [user]);
 
   const handleOpenTaskPage = (taskId: string) => {
     router.push(`/tasks/${taskId}`);

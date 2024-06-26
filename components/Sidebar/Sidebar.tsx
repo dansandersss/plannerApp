@@ -18,21 +18,20 @@ import { links } from "../../constants/linkInfo";
 import Search from "../ui/SearchInput/Search";
 import { useSidebar } from "./SidebarContext";
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { isSidebarOpen, setIsSidebarOpen } = useSidebar();
-  const [tasks, setTasks] = useState([]);
   const pathname = usePathname();
   const { user, setUser, setIsLoggedIn } = useGlobalContext();
   const router = useRouter();
-  const [windowWidth, setWindowWidth] = useState(null);
+  const [windowWidth, setWindowWidth] = useState<number | null>(null);
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
     window.addEventListener("resize", handleResize);
-    handleResize(); // Initialize windowWidth
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
@@ -50,7 +49,7 @@ const Sidebar = () => {
       setUser(userData);
     };
     fetchUser();
-  }, []);
+  }, [setUser]);
 
   const logout = async () => {
     await signOut();
@@ -74,20 +73,22 @@ const Sidebar = () => {
           } `}
         >
           <div
-            className={`bg-white 
-            } rounded-full border-white ${
-              isSidebarOpen || (!isSidebarOpen && windowWidth >= 1024)
+            className={`bg-white rounded-full border-white ${
+              isSidebarOpen ||
+              (!isSidebarOpen && windowWidth && windowWidth >= 1024)
                 ? "block"
                 : "hidden"
             } border-[4px]`}
           >
-            <Image
-              src={avatarUrl}
-              alt=""
-              width={86}
-              height={86}
-              className="rounded-full"
-            />
+            {avatarUrl && (
+              <Image
+                src={avatarUrl}
+                alt="User Avatar"
+                width={86}
+                height={86}
+                className="rounded-full"
+              />
+            )}
           </div>
           <div className="text-center">
             <h1 className="text-white text-lg">{user?.username}</h1>
@@ -120,7 +121,7 @@ const Sidebar = () => {
                       icon={link.icon}
                     />
                     {isSidebarOpen ||
-                    (!isSidebarOpen && windowWidth >= 1024) ? (
+                    (!isSidebarOpen && windowWidth && windowWidth >= 1024) ? (
                       <div className="flex items-center justify-between w-full">
                         <p className="text-[14px] md:text-[18px]">
                           {link.text}
@@ -150,11 +151,11 @@ const Sidebar = () => {
             </button>
           </nav>
           <div
-            className={` flex lg:hidden justify-center mt-4 items-center gap-2`}
+            className={`flex lg:hidden justify-center mt-4 items-center gap-2`}
           >
             <FontAwesomeIcon
               onClick={() => setIsSidebarOpen(true)}
-              className={` text-white cursor-pointer`}
+              className="text-white cursor-pointer"
               icon={faMagnifyingGlass}
             />
             <div className={`${isSidebarOpen ? "flex" : "hidden"}`}>
@@ -169,7 +170,8 @@ const Sidebar = () => {
             <FontAwesomeIcon icon={faRightFromBracket} />
             <p
               className={`${
-                isSidebarOpen || (!isSidebarOpen && windowWidth >= 1024)
+                isSidebarOpen ||
+                (!isSidebarOpen && windowWidth && windowWidth >= 1024)
                   ? "block"
                   : "hidden"
               }`}

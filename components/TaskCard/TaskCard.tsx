@@ -4,7 +4,26 @@ import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import useFormatDate from "@/hooks/useFormatDate";
 
-function TaskCard({ task, onUpdate, disableClick }) {
+interface Task {
+  $id: string;
+  title: string;
+  desc: string;
+  priority: "Low" | "Medium" | "High";
+  $createdAt: string;
+  tags: string[];
+}
+
+interface TaskCardProps {
+  task: Task;
+  onUpdate?: (task: Task) => void;
+  disableClick?: boolean;
+}
+
+const TaskCard: React.FC<TaskCardProps> = ({
+  task,
+  onUpdate,
+  disableClick,
+}) => {
   const maxLength = 100;
   const tagsLength = 2;
   const pathName = usePathname();
@@ -19,14 +38,6 @@ function TaskCard({ task, onUpdate, disableClick }) {
 
   return (
     <div className="mb-4 cursor-pointer" onClick={handleClick}>
-      {/* <div className="mb-4">
-        {task.status !== "completed" && (
-          <button onClick={handleCompleteTask} className=" text-black ">
-            Complete Task
-          </button>
-        )}
-      </div> */}
-
       <div className="relative">
         <div
           className={`w-3 h-3 rounded-full fill-none absolute border-2 top-0 -left-2 ${
@@ -39,29 +50,29 @@ function TaskCard({ task, onUpdate, disableClick }) {
         ></div>
 
         <div className="ml-4">
-          <h3 className="text-lg  font-bold">{task.title}</h3>
+          <h3 className="text-lg font-bold">{task.title}</h3>
           <p className="text-sm sm:text-lg">
             {task.desc.length > maxLength
               ? `${task.desc.substring(0, maxLength)}...`
               : task.desc}
           </p>
           <div className="flex justify-between items-center mt-2 border-b-2 pb-4">
-            <span className={`text-sm text-gray-400`}>
+            <span className="text-sm text-gray-400">
               Priority:{" "}
               <span
-                className={`${
+                className={
                   task.priority === "Low"
                     ? "text-priorityColor-low"
                     : task.priority === "Medium"
                     ? "text-priorityColor-medium"
                     : "text-priorityColor-high"
-                }`}
+                }
               >
                 {task.priority}
               </span>
-              <p className={`${pathName === "/pageOne" ? "block" : "hidden"}`}>
-                Created on: {formatCreatedAt(task.$createdAt)}
-              </p>
+              {pathName === "/pageOne" && (
+                <p>Created on: {formatCreatedAt(task.$createdAt)}</p>
+              )}
             </span>
             <span className="text-sm text-gray-600">
               Tags:{" "}
@@ -74,6 +85,6 @@ function TaskCard({ task, onUpdate, disableClick }) {
       </div>
     </div>
   );
-}
+};
 
 export default TaskCard;
