@@ -33,15 +33,16 @@ function MyTasks() {
   const [isLoading, setIsLoading] = useState(true);
   const { isSidebarOpen } = useSidebar();
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (userId: string) => {
     try {
-      const allTasks = await getAllTasks();
+      const allTasks = await getAllTasks(userId);
       const filteredTasks = allTasks.filter(
         (task: Task) => task.status !== "completed"
       );
       setTasks(filteredTasks);
+      setIsLoading(false);
+
       if (filteredTasks.length > 0) {
-        setIsLoading(false);
         setSelectedTask(filteredTasks[0]);
       }
     } catch (error: any) {
@@ -50,8 +51,10 @@ function MyTasks() {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (user && user.$id) {
+      fetchTasks(user.$id);
+    }
+  }, [user]);
 
   const handleDeleteTask = async (taskId: string) => {
     try {

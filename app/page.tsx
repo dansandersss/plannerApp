@@ -7,7 +7,6 @@ import { checkAuth } from "@/lib/appwrite";
 
 export default function Main() {
   const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false); // Состояние для проверки аутентификации
   const router = useRouter();
 
   useEffect(() => {
@@ -16,8 +15,7 @@ export default function Main() {
       if (!isAuthenticated) {
         router.push("/login");
       } else {
-        setAuthenticated(true);
-        setTimeout(() => setLoading(false), 2000); // Запуск загрузчика после успешной аутентификации
+        setLoading(false);
       }
     };
 
@@ -25,20 +23,14 @@ export default function Main() {
   }, [router]);
 
   useEffect(() => {
-    if (authenticated && !loading) {
+    if (!loading) {
       router.push("/dashboard");
     }
-  }, [authenticated, loading, router]);
+  }, [loading, router]);
 
-  return (
-    <>
-      <div>
-        {authenticated && loading ? (
-          <div>
-            <Loader loadingTime={2} />
-          </div>
-        ) : null}
-      </div>
-    </>
-  );
+  if (loading) {
+    return <Loader loadingTime={2} />;
+  }
+
+  return null;
 }

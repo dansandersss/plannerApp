@@ -35,22 +35,27 @@ function VitalTasks() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { isSidebarOpen } = useSidebar();
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
-  const fetchTasks = async () => {
+  const fetchTasks = async (userId: string) => {
     try {
-      const vitalTasks = await getVitalTaks();
-      setTasks(vitalTasks);
-      if (vitalTasks.length > 0) {
-        setSelectedTask(vitalTasks[0]);
+      const vitalTasks = await getVitalTaks(userId);
+      const filteredTasks = vitalTasks.filter(
+        (task: Task) => task.status !== "completed"
+      );
+      setTasks(filteredTasks);
+      if (filteredTasks.length > 0) {
+        setSelectedTask(filteredTasks[0]);
       }
       setIsLoading(false);
     } catch (error) {
       console.log("Error fetching tasks:", error.message);
     }
   };
+
+  useEffect(() => {
+    if (user && user.$id) {
+      fetchTasks(user.$id);
+    }
+  }, [user]);
 
   const handleDeleteTask = async (taskId: string) => {
     try {

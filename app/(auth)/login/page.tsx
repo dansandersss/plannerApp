@@ -57,12 +57,12 @@ export default function LoginPage() {
       <BackgroundParticles src={images.bgParticles} />
       <div
         className={`flex bg-white ${
-          isRegistering ? "flex-row-reverse" : ""
-        } rounded-md items-center justify-between gap-10 py-20 px-40 relative z-10 w-[70%]`}
+          isRegistering ? "md:flex-row-reverse" : ""
+        } rounded-md items-center justify-center lg:justify-between gap-10 py-20 px-2 relative z-10 w-[70%]`}
       >
         <form
           onSubmit={isRegistering ? handleRegister : handleLogin}
-          className=" text-white p-6"
+          className=" text-white p-6 w-[450px]"
         >
           <h2 className="text-2xl mb-4 text-black font-bold">
             {isRegistering ? "Sign Up" : "Sign In"}
@@ -139,7 +139,7 @@ export default function LoginPage() {
             )}
           </p>
         </form>
-        <div className="w-1/2 flex justify-center">
+        <div className="w-1/2 hidden lg:flex justify-center">
           <Image
             src={isRegistering ? images.regImg : images.loginImg}
             alt="login"

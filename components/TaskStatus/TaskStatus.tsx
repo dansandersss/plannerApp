@@ -3,6 +3,7 @@ import { getAllTasks } from "@/lib/appwrite";
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -20,10 +21,11 @@ const TaskStatus: React.FC = () => {
   const [completedPercent, setCompletedPercent] = useState<number>(0);
   const [inProgressPercent, setInProgressPercent] = useState<number>(0);
   const [allTasks, setAllTasks] = useState<Task[]>([]);
+  const { user } = useGlobalContext();
 
-  const fetchAllTasks = async () => {
+  const fetchAllTasks = async (userId: string) => {
     try {
-      const allFetchedTasks = await getAllTasks();
+      const allFetchedTasks = await getAllTasks(userId);
       setAllTasks(allFetchedTasks);
     } catch (error) {
       console.log("Error fetching tasks", error.message);
@@ -31,8 +33,10 @@ const TaskStatus: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchAllTasks();
-  }, []);
+    if (user && user.$id) {
+      fetchAllTasks(user.$id);
+    }
+  }, [user]);
 
   useEffect(() => {
     const totalTasks = allTasks.length;

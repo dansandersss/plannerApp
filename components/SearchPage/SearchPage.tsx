@@ -49,10 +49,8 @@ function SearchPage() {
         <LoaderForPages loadingTime={5} />
       ) : (
         <section
-          className={`mt-16 transition-all duration-200 ease-in-out ml-14 pb-4 ${
-            isSidebarOpen
-              ? "translate-x-10 md:translate-x-4"
-              : "-translate-x-14 md:-translate-x-24"
+          className={`mt-16 w-1/2 sm:w-2/3 transition-all duration-200 ease-in-out ml-14 pb-4 ${
+            isSidebarOpen ? "sm:translate-x-10" : "translate-x-8"
           }`}
         >
           <h1 className="text-black text-4xl font-bold mb-4">Search Results</h1>

@@ -3,6 +3,7 @@
 import { getCompletedTasks } from "@/lib/appwrite";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { useGlobalContext } from "@/context/GlobalProvider";
 
 interface Task {
   $updatedAt: string;
@@ -21,11 +22,14 @@ function CompletedTask() {
   const [latestCompletedTask, setLatestCompletedTask] = useState<Task | null>(
     null
   );
+  const { user } = useGlobalContext();
+  const userId = user?.$id;
 
   useEffect(() => {
-    const fetchLatestCompletedTask = async () => {
+    if (!userId) return;
+    const fetchLatestCompletedTask = async (userId: string) => {
       try {
-        const completedTasks: Document[] = await getCompletedTasks();
+        const completedTasks: Document[] = await getCompletedTasks(1, userId);
 
         if (completedTasks.length > 0) {
           const task: Task = {
@@ -40,7 +44,7 @@ function CompletedTask() {
         console.log("Error fetching latest completed task", error.message);
       }
     };
-    fetchLatestCompletedTask();
+    fetchLatestCompletedTask(userId);
   }, []);
 
   if (!latestCompletedTask) {

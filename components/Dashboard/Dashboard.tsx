@@ -39,11 +39,8 @@ function Dashboard() {
   const fetchTasks = async (userId: string) => {
     try {
       const latestTasks: Task[] = await getLatestTasks(2, userId);
-      console.log(user.$id);
       setTasks(latestTasks);
-      if (latestTasks.length > 0) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     } catch (error: any) {
       console.log("Error fetching tasks", error.message);
     }

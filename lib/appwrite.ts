@@ -152,11 +152,12 @@ export const getLatestTasks = async (limit = 2, currentUser) => {
   }
 };
 
-export const getAllTasks = async () => {
+export const getAllTasks = async (currentUser) => {
   try {
     const allTasks = await databases.listDocuments(
       config.databaseId,
-      config.tasksCollectionId
+      config.tasksCollectionId,
+      [Query.equal("users", currentUser)]
     );
     return allTasks.documents;
   } catch (error) {
@@ -165,7 +166,7 @@ export const getAllTasks = async () => {
   }
 };
 
-export const getCompletedTasks = async (limit = 1) => {
+export const getCompletedTasks = async (limit = 1, currentUser) => {
   try {
     const tasks = await databases.listDocuments(
       config.databaseId,
@@ -174,6 +175,7 @@ export const getCompletedTasks = async (limit = 1) => {
         Query.orderDesc("$updatedAt"),
         Query.limit(limit),
         Query.equal("status", ["completed"]),
+        Query.equal("users", currentUser),
       ]
     );
     return tasks.documents || [];
@@ -241,12 +243,16 @@ export const deleteTaskById = async (taskId) => {
   }
 };
 
-export const getVitalTaks = async () => {
+export const getVitalTaks = async (currentUser) => {
   try {
     const vitalTasks = await databases.listDocuments(
       config.databaseId,
       config.tasksCollectionId,
-      [Query.orderDesc("$createdAt"), Query.equal("priority", ["High"])]
+      [
+        Query.orderDesc("$createdAt"),
+        Query.equal("priority", ["High"]),
+        Query.equal("users", currentUser),
+      ]
     );
     return vitalTasks.documents || [];
   } catch (error) {
