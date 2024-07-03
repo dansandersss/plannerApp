@@ -13,6 +13,7 @@ import gsap from "gsap";
 import LoaderForPages from "../Loader/LoaderForPages";
 import { useSidebar } from "../Sidebar/SidebarContext";
 import useFormatDate from "@/hooks/useFormatDate";
+import BasicModal from "../Modal/NewModal";
 
 interface Task {
   $id: string;
@@ -35,6 +36,15 @@ function Dashboard() {
   const router = useRouter();
   const taskRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { isSidebarOpen } = useSidebar();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const fetchTasks = async (userId: string) => {
     try {
@@ -130,7 +140,15 @@ function Dashboard() {
                     className="text-newTextColor-7-1"
                     icon={faPlus}
                   />
-                  <p className="text-sm sm:text-lg">Add task</p>
+                  <button
+                    className="text-sm sm:text-lg"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleOpenModal();
+                    }}
+                  >
+                    Add task
+                  </button>
                 </div>
               </div>
 
@@ -191,6 +209,7 @@ function Dashboard() {
           </div>
         </section>
       )}
+      <BasicModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </>
   );
 }

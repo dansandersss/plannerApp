@@ -157,7 +157,7 @@ export const getAllTasks = async (currentUser) => {
     const allTasks = await databases.listDocuments(
       config.databaseId,
       config.tasksCollectionId,
-      [Query.equal("users", currentUser)]
+      [Query.equal("users", currentUser), Query.orderDesc("$createdAt")]
     );
     return allTasks.documents;
   } catch (error) {
@@ -289,7 +289,7 @@ export const getAllTodos = async (currentUser) => {
     const allTodos = await databases.listDocuments(
       config.databaseId,
       config.todoCollectionId,
-      [Query.orderAsc("$createdAt"), Query.equal("users", currentUser)]
+      [Query.orderDesc("$createdAt"), Query.equal("users", currentUser)]
     );
     return allTodos.documents;
   } catch (error) {

@@ -56,7 +56,7 @@ const Todo: React.FC = () => {
   const onSubmit = async (todoData: Todo) => {
     try {
       await addTodo(todoData);
-      fetchTodoList();
+      fetchTodoList(user.$id);
     } catch (error) {
       console.log(error.message);
     }

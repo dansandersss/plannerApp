@@ -62,7 +62,7 @@ const Notes: React.FC = () => {
   const onSubmit = async (noteData: Note) => {
     try {
       await addNote(noteData);
-      fetchAllNotes();
+      fetchAllNotes(user.$id);
     } catch (error) {
       console.log(error.message);
     }
@@ -94,7 +94,7 @@ const Notes: React.FC = () => {
       await deleteNoteById(noteId);
       setIsDeleted(true);
       setMenuOpen(false);
-      fetchAllNotes();
+      fetchAllNotes(user.$id);
     } catch (error) {
       console.error("Error deleting note:", error.message);
     }
