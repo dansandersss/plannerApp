@@ -61,7 +61,7 @@ function SearchPage() {
                 <TaskCard key={task.$id} task={task} />
               ))
             ) : (
-              <p>No results found for "{query}"</p>
+              <p>{`No results found for "${query}"`}</p>
             )}
           </div>
         </section>

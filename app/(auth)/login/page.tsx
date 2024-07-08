@@ -128,7 +128,7 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                You don't have an account?{" "}
+                {`You don't have an account?`}{" "}
                 <span
                   className="text-newTextColor-7-1 hover:text-newBgColor-7-2 transition-all ease-in-out duration-200 cursor-pointer"
                   onClick={() => setIsRegistering(true)}

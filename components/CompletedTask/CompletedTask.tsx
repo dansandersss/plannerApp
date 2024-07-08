@@ -45,7 +45,7 @@ function CompletedTask() {
       }
     };
     fetchLatestCompletedTask(userId);
-  }, []);
+  }, [userId]);
 
   if (!latestCompletedTask) {
     return null;
