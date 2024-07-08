@@ -16,7 +16,7 @@ export default function LoginPage() {
   const router = useRouter();
   const imageRef = useRef(null);
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
       await signIn(email, password);
@@ -26,7 +26,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleRegister = async (event) => {
+  const handleRegister = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
       await createUser(email, password, username);
@@ -128,7 +128,7 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                {`You don't have an account?`}{" "}
+                {`You don&apos;t have an account?`}{" "}
                 <span
                   className="text-newTextColor-7-1 hover:text-newBgColor-7-2 transition-all ease-in-out duration-200 cursor-pointer"
                   onClick={() => setIsRegistering(true)}
