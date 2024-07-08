@@ -12,16 +12,16 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const imageRef = useRef(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
       await signIn(email, password);
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
     }
   };
@@ -31,25 +31,29 @@ export default function LoginPage() {
     try {
       await createUser(email, password, username);
       router.push("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message);
     }
   };
 
   const handleMouseEnter = () => {
-    gsap.to(imageRef.current, {
-      scale: 1.1,
-      duration: 0.3,
-      ease: "power1.out",
-    });
+    if (imageRef.current) {
+      gsap.to(imageRef.current, {
+        scale: 1.1,
+        duration: 0.3,
+        ease: "power1.out",
+      });
+    }
   };
 
   const handleMouseLeave = () => {
-    gsap.to(imageRef.current, {
-      scale: 1,
-      duration: 0.3,
-      ease: "power1.out",
-    });
+    if (imageRef.current) {
+      gsap.to(imageRef.current, {
+        scale: 1,
+        duration: 0.3,
+        ease: "power1.out",
+      });
+    }
   };
 
   return (
@@ -62,7 +66,7 @@ export default function LoginPage() {
       >
         <form
           onSubmit={isRegistering ? handleRegister : handleLogin}
-          className=" text-white p-6 w-[450px]"
+          className="text-white p-6 w-[450px]"
         >
           <h2 className="text-2xl mb-4 text-black font-bold">
             {isRegistering ? "Sign Up" : "Sign In"}
@@ -111,7 +115,7 @@ export default function LoginPage() {
           </div>
           <button
             type="submit"
-            className=" bg-newBgColor-7-1 hover:bg-newBgColor-7-2 transition ease-in-out duration-200 text-white px-4 py-2 rounded-md"
+            className="bg-newBgColor-7-1 hover:bg-newBgColor-7-2 transition ease-in-out duration-200 text-white px-4 py-2 rounded-md"
           >
             {isRegistering ? "Sign Up" : "Sign In"}
           </button>
@@ -120,7 +124,7 @@ export default function LoginPage() {
               <>
                 Do you have an account?{" "}
                 <span
-                  className=" text-newTextColor-7-1 hover:text-newBgColor-7-2 transition-all ease-in-out duration-200 cursor-pointer"
+                  className="text-newTextColor-7-1 hover:text-newBgColor-7-2 transition-all ease-in-out duration-200 cursor-pointer"
                   onClick={() => setIsRegistering(false)}
                 >
                   Sign In
@@ -128,7 +132,7 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                {`You don&apos;t have an account?`}{" "}
+                {`You don't have an account?`}{" "}
                 <span
                   className="text-newTextColor-7-1 hover:text-newBgColor-7-2 transition-all ease-in-out duration-200 cursor-pointer"
                   onClick={() => setIsRegistering(true)}
